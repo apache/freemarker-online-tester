@@ -1,0 +1,114 @@
+.clear {
+  clear: both;
+}
+
+#layout {
+	position: relative;
+	padding: 0;
+}
+
+.header {
+	margin: 0;
+	padding: 1em 0;
+	border-bottom: 1px solid #eee;
+	text-align: center;
+	color: #444;
+}
+
+.content {
+    margin: 0 auto;
+    padding: 1em 0;
+    width: 920px;
+}
+
+.footer {
+    margin: 0;
+    padding: 1em 2em 0;
+    border-top: 1px solid #eee;
+    text-align: center;
+    color: #444;
+}
+
+.errorMessage {
+    font-size: small;
+    color: red;
+    display: none;
+}
+
+.header h1 {
+    margin: 0.2em 0;
+    font-size: 1.75em;
+    font-weight: normal;
+}
+
+#result {
+    background-color: #FFF;
+    color: #000	
+}
+
+#result.error {
+    background-color: #FFF0F0;
+	color: #A00;
+}
+
+.faint {
+	color: #bbb
+}
+
+textarea.source-code {
+	font-family: monospace !important;
+    /* We set a few more things to decrease the chance of jQuery Autosize plugin issues: */
+    font-size: 1em !important;  
+	resize: none !important;
+    line-height: 1em !important;
+}
+
+.hiddenByDefault {
+   display: none;
+}
+
+#dataModelExamples {
+	background: #eee;
+	padding: 4px;
+	margin: 0;
+}
+
+#dataModelExamples .description {
+	font-style: italic;
+	margin-bottom: 1em;
+}
+
+#dataModelExamples pre {
+  font-family: monospace;
+  font-size: 1em;
+  padding: 0;
+  margin: 0;
+}
+
+#templateAndModelForm input,
+#templateAndModelForm textarea,
+#templateAndModelForm button {
+	margin-bottom: 1em;
+}
+
+#templateAndModelForm label {
+    margin-top: 1em;
+    margin-bottom: 0.25em;
+}
+
+.formPanel {
+	
+}
+
+.formBottomButtonsContainer {
+    margin-top: 1.5em;
+}
+
+.resultContainer {
+    margin-top: 1em;
+}
+
+.horizontalBox {
+    display: inline-block;
+		padding-right: 1em;	
+}

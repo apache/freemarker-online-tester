@@ -1,0 +1,130 @@
+group = 'com.kenshoo.freemarker'
+project.projectName = "freemarker-online"
+def BUILD_NUMBER = project.hasProperty('BUILD_NUMBER') ? "$BUILD_NUMBER" : 'undef'
+project.version = "0.1.$BUILD_NUMBER"
+project.yml = "$rootDir/src/main/resources/${projectName}.yml"
+project.jarName = "$rootDir/build/libs/${projectName}-${project.version}.jar"
+
+apply from: "intellij.gradle"
+apply from: "${rootDir}/dependencies.gradle"
+apply plugin: 'maven'
+apply plugin: 'java'
+apply plugin: 'jacoco'
+apply plugin: 'project-report'
+apply plugin: 'fatjar'
+apply plugin: 'fpm-packaging'
+
+// Because Spring 3 doesn't officially support Java 8, and indeed asm fails with it:
+// Must be after `apply plugin: 'java'`!
+project.sourceCompatibility = "1.7"
+project.targetCompatibility = "1.7"
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'eu.appsatori:gradle-fatjar-plugin:0.2-rc1'
+        classpath 'com.kenshoo:gradle-fpm:+'
+    }
+}
+
+repositories {
+    mavenCentral()
+    
+    // For com.berico:fallwizard:1.1.1 that must be locally installed; see README.md!
+    mavenLocal()
+}
+
+dependencies {
+    compile libraries.dropwizard
+    compile libraries.dropwizrd_views
+    compile libraries.springCore
+    compile libraries.springContext
+    compile libraries.springContextSupport
+    compile libraries.springExpression
+    compile libraries.springSecurityCore
+    compile libraries.springTransaction
+    compile libraries.springBeans
+    compile libraries.fallwizard
+
+    testCompile libraries.dropwizard_testing
+    testCompile libraries.springTest
+    testCompile libraries.junit
+    testCompile libraries.mockito
+    testCompile libraries.hamcrest
+
+    compile libraries.freemarker
+    compile libraries.jackson_databind
+    compile libraries.commonLangs
+    compile libraries.findBugs
+
+    testCompile libraries.selenium_java
+    testCompile libraries.jersey_grrizle
+    testCompile libraries.jersey_client
+    testCompile libraries.springJersey
+}
+
+compileJava {
+    options.compilerArgs << "-Werror"
+}
+compileTestJava {
+    options.compilerArgs << "-Werror"
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '1.10'
+}
+
+fatJar {
+    exclude "META-INF/*.SF"
+    exclude "META-INF/*.DSA"
+    exclude "META-INF/*.RSA"
+    manifest {
+        attributes 'Main-Class': 'com.kenshoo.freemarker.dropwizard.ApplicationStartup'
+        attributes 'Implementation-Version': "$version"
+    }
+}
+
+// this merges the spring files into META-INF properly
+fatJarPrepareFiles {
+    include 'META-INF/spring.handlers'
+    include 'META-INF/spring.schemas'
+}
+
+// wrap jar, upstart and yml into deb package:
+
+def stagingDir = new File(project.buildDir, "staging")
+
+task stageArtifacts(type: Copy) {
+    stagingDir.mkdir()
+    // place yml file and jar under staging dir
+    into new File(stagingDir, "/opt/${projectName}")
+    from "build/resources/main/${projectName}.yml"
+    from 'build/libs'
+}
+
+task stageStartScript << {
+    new File(stagingDir, "opt/${projectName}/start").withWriter("UTF-8") {
+        it.println "#!/usr/bin/env sh\n" +
+                " set -e\n" +
+                " exec java \$* -jar ${project.name}-${project.version}.jar server ${project.name}.yml"
+    }
+}
+
+task stageFiles(dependsOn: [stageArtifacts, stageStartScript]) << {
+    println "staging debian files"
+}
+
+// configure plugin to package the staging dir we've
+// just created, and to declare java-7 dependency
+packaging {
+    dependencies = ['openjdk-7-jre']
+    baseDir = stagingDir
+}
+
+
+fatJar.dependsOn jar
+build.dependsOn fatJar
+stageFiles.dependsOn build
+debian.dependsOn stageFiles
