@@ -39,12 +39,6 @@ import com.kenshoo.freemarker.view.FreeMarkerOnlineView;
 
 import freemarker.core.OutputFormat;
 
-/**
- * Created with IntelliJ IDEA.
- * User: nir
- * Date: 4/12/14
- * Time: 11:23 PM
- */
 @RunWith(MockitoJUnitRunner.class)
 public class FreeMarkerOnlineResourceTest {
 

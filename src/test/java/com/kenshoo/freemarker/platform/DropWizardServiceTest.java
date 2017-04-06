@@ -23,12 +23,6 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 
-/**
- * Created with IntelliJ IDEA.
- * User: shlomis
- * Date: 9/9/13
- * Time: 10:43 AM
- */
 public class DropWizardServiceTest {
     @ClassRule
     public static TestRule testRule = new DropwizardServiceRule<>(ApplicationStartup.class,

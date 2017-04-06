@@ -31,12 +31,6 @@ import org.springframework.stereotype.Component;
 
 import com.kenshoo.freemarker.view.FreeMarkerOnlineView;
 
-/**
- * Created with IntelliJ IDEA.
- * User: shlomis
- * Date: 9/1/13
- * Time: 4:35 PM
- */
 @Path("/")
 @Component
 public class FreeMarkerOnlineResource {

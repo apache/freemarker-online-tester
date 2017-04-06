@@ -58,12 +58,6 @@ import freemarker.template.TemplateDirectiveModel;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateModel;
 
-/**
- * Created with IntelliJ IDEA.
- * User: nir
- * Date: 4/12/14
- * Time: 11:15 AM
- */
 @RunWith(MockitoJUnitRunner.class)
 public class FreeMarkerServiceTest {
 

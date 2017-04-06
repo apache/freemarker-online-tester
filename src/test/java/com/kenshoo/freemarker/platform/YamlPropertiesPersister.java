@@ -27,12 +27,6 @@ import java.io.*;
 import java.util.Map;
 import java.util.Properties;
 
-/**
- * Created with IntelliJ IDEA.
- * User: shlomis
- * Date: 9/8/13
- * Time: 10:50 PM
- */
 public class YamlPropertiesPersister implements PropertiesPersister {
     @Override
     public void load(Properties props, InputStream is) throws IOException {
