@@ -25,11 +25,6 @@ import com.yammer.dropwizard.assets.AssetsBundle;
 import com.yammer.dropwizard.config.Bootstrap;
 import com.yammer.dropwizard.views.ViewBundle;
 
-/**
- * User: dekely
- * Date: 3/17/13
- * Time: 10:39 AM
- */
 public class ApplicationStartup extends SpringService<SpringConfiguration> {
 
     public static void main(String[] args) throws Exception {

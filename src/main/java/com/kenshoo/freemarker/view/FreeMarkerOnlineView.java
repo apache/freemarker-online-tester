@@ -34,9 +34,6 @@ import com.yammer.dropwizard.views.View;
 
 import freemarker.template.Configuration;
 
-/**
- * Created with IntelliJ IDEA. User: nir Date: 4/11/14 Time: 12:23 PM
- */
 public class FreeMarkerOnlineView extends View {
 
     private static final List<SelectionOption> LOCALE_SELECTION_OPTIONS = toLocaleSelectionOptions(AllowedSettingValuesMaps.LOCALE_MAP);

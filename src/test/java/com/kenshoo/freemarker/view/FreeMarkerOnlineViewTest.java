@@ -30,12 +30,7 @@ import com.kenshoo.freemarker.services.AllowedSettingValuesMaps;
 
 import freemarker.core.HTMLOutputFormat;
 
-/**
- * Created with IntelliJ IDEA.
- * User: nir
- * Date: 4/12/14
- * Time: 11:13 PM
- */
+
 public class FreeMarkerOnlineViewTest {
 
     private static final String TEMPLATE = "Template";

@@ -24,12 +24,6 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-/**
- * Created with IntelliJ IDEA.
- * User: nir
- * Date: 4/13/14
- * Time: 7:30 AM
- */
 public class FreeMarkerServiceResponseBuilderTest {
 
     private static final String RESULT = "Result";
