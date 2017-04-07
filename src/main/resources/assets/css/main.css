@@ -131,3 +131,10 @@ textarea.source-code {
     display: inline-block;
 		padding-right: 1em;	
 }
+
+.forkMeOnGithub {
+    position: absolute;
+    top: 0;
+    right: 0;
+    border: 0;
+}
