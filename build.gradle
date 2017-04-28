@@ -51,13 +51,13 @@ buildscript {
 repositories {
     mavenCentral()
     
-    // For com.berico:fallwizard:1.1.1 that must be locally installed; see README.md!
-    mavenLocal()
 }
 
 dependencies {
     compile libraries.dropwizard
-    compile libraries.dropwizrd_views
+    compile libraries.dropwizard_views
+    compile libraries.dropwizard_views_freemarker
+    compile libraries.dropwizard_assets
     compile libraries.springCore
     compile libraries.springContext
     compile libraries.springContextSupport
@@ -65,7 +65,7 @@ dependencies {
     compile libraries.springSecurityCore
     compile libraries.springTransaction
     compile libraries.springBeans
-    compile libraries.fallwizard
+    compile libraries.springWeb
 
     testCompile libraries.dropwizard_testing
     testCompile libraries.springTest
@@ -100,7 +100,7 @@ fatJar {
     exclude "META-INF/*.DSA"
     exclude "META-INF/*.RSA"
     manifest {
-        attributes 'Main-Class': 'org.apache.freemarker.onlinetester.dropwizard.ApplicationStartup'
+        attributes 'Main-Class': 'org.apache.freemarker.onlinetester.dropwizard.FreeMarkerOnlineTester'
         attributes 'Implementation-Version': "$version"
     }
 }

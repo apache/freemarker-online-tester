@@ -39,7 +39,7 @@ idea.workspace.iws.withXml { provider ->
     list.appendNode('item', [index: '0', class: 'java.lang.String', itemvalue: 'MyProjectStartup'])
     def Application = runManager.appendNode('configuration', [default: 'false', name: "${projectName}", type: 'Application', factoryName: 'Application'])
     Application.appendNode('extension', [name: 'coverage', enabled: 'false', merge: 'false', runner: 'idea'])
-    Application.appendNode('option', [name: 'MAIN_CLASS_NAME', value: "org.apache.freemarker.onlinetester.dropwizard.ApplicationStartup"])
+    Application.appendNode('option', [name: 'MAIN_CLASS_NAME', value: "org.apache.freemarker.onlinetester.dropwizard.FreeMarkerOnlineTester"])
     Application.appendNode('option', [name: 'VM_PARAMETERS', value: ""])
     Application.appendNode('option', [name: 'PROGRAM_PARAMETERS', value: "server  src/main/resources/${projectName}.yml"])
     Application.appendNode('option', [name: 'WORKING_DIRECTORY', value: "$projectDir"])
