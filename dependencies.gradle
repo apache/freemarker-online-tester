@@ -43,7 +43,6 @@ project.libraries = [
 
         // Security
         // Spring and Spring Security support for dropwizard
-        // adheres to fallwizard version of spring security
         springSecurityCore: "org.springframework.security:spring-security-core:3.1.4.RELEASE",
         dropwizardAuth: "io.dropwizard:dropwizard-auth:$dw_version",
 

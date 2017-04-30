@@ -29,10 +29,6 @@ For a deployed version of this tool you can visit http://freemarker-online.kensh
 Development Instuctions
 ------------------------
 * Clone the repository to a local directory
-* Currently the project has an old dependency, "com.berico:fallwizard:1.1.1", which can't be found in any public repositories I know of. Thus, you have to Maven-install it locally:
-  1. Clone https://github.com/Berico-Technologies/Fallwizard.git
-  2. Check out this old version: 7ed7803496
-  3. `mvn install` it
 * Run "./gradlew build" from the cloned directory (use JDK 7, not 8!)
 * If you want to run it using IDEA run "./gradlew cleanidea idea" - this will generate the IDEA project for you.
 * For running the software from a command line, build `fatJar` (not `jar`) and then just hit "java -jar build/libs/freemarker-online-0.1.undef.jar server  src/main/resources/freemarker-online.yml"
