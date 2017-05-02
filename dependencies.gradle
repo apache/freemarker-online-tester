@@ -18,14 +18,16 @@
  */
 
 project.ext.set("libraries", "")
-ext.dw_version = "0.6.2";
-ext.spring_version = "3.2.2.RELEASE";
+ext.dw_version = "0.7.1";
+ext.spring_version = "3.2.18.RELEASE";
 ext.jackson_version = "2.5.1";
 
 project.libraries = [
-        dropwizard: "com.yammer.dropwizard:dropwizard-core:$dw_version",
-        dropwizard_client: "com.yammer.dropwizard:dropwizard-client:$dw_version",
-        dropwizrd_views: "com.yammer.dropwizard:dropwizard-views:$dw_version",
+        dropwizard: "io.dropwizard:dropwizard-core:$dw_version",
+        dropwizard_client: "io.dropwizard:dropwizard-client:$dw_version",
+        dropwizard_views: "io.dropwizard:dropwizard-views:$dw_version",
+        dropwizard_views_freemarker: "io.dropwizard:dropwizard-views-freemarker:$dw_version",
+        dropwizard_assets: "io.dropwizard:dropwizard-assets:$dw_version",
         guava: 'com.google.guava:guava:13.0.1',
         jersey_core: 'com.sun.jersey:jersey-core:1.1.4.1',
 
@@ -37,19 +39,18 @@ project.libraries = [
         springTransaction: "org.springframework:spring-tx:$spring_version",
         springBeans: "org.springframework:spring-beans:$spring_version",
         springJersey: "com.sun.jersey.contribs:jersey-spring:1.7",
+        springWeb: "org.springframework:spring-web:$spring_version",
 
         // Security
         // Spring and Spring Security support for dropwizard
-        fallwizard: "com.berico:fallwizard:1.1.1",
-        // adheres to fallwizard version of spring security
         springSecurityCore: "org.springframework.security:spring-security-core:3.1.4.RELEASE",
-        dropwizardAuth: "com.yammer.dropwizard:dropwizard-auth:$dw_version",
+        dropwizardAuth: "io.dropwizard:dropwizard-auth:$dw_version",
 
         // Spring test
         springTest: "org.springframework:spring-test:$spring_version",
 
         //Test libs
-        dropwizard_testing: "com.yammer.dropwizard:dropwizard-testing:$dw_version",
+        dropwizard_testing: "io.dropwizard:dropwizard-testing:$dw_version",
         junit: 'junit:junit-dep:4.11',
         mockito: 'org.mockito:mockito-core:1.9.0',
         hamcrest: 'org.hamcrest:hamcrest-library:1.3',

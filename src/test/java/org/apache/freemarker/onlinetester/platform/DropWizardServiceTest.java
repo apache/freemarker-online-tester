@@ -20,20 +20,22 @@
 package org.apache.freemarker.onlinetester.platform;
 
 import com.google.common.io.Resources;
-import org.apache.freemarker.onlinetester.dropwizard.ApplicationStartup;
-import com.yammer.dropwizard.testing.junit.DropwizardServiceRule;
+import io.dropwizard.testing.junit.DropwizardAppRule;
+
+import org.apache.freemarker.onlinetester.dropwizard.FreeMarkerOnlineTester;
+import org.apache.freemarker.onlinetester.dropwizard.FreeMarkerOnlineTesterConfiguration;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 
 public class DropWizardServiceTest {
     @ClassRule
-    public static TestRule testRule = new DropwizardServiceRule<>(ApplicationStartup.class,
+    public static TestRule testRule = new DropwizardAppRule<FreeMarkerOnlineTesterConfiguration>(FreeMarkerOnlineTester.class,
             Resources.getResource("freemarker-online.yml").getPath());
 
 
     @Test
     public void testServerIsUp() throws Exception {
-        ((DropwizardServiceRule) testRule).getService();
+        ((DropwizardAppRule) testRule).getApplication();
     }
 }

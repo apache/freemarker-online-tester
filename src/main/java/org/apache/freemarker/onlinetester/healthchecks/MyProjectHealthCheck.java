@@ -19,16 +19,11 @@
 
 package org.apache.freemarker.onlinetester.healthchecks;
 
-import com.yammer.metrics.core.HealthCheck;
+import com.codahale.metrics.health.HealthCheck;
 import org.springframework.stereotype.Component;
 
 @Component
 public class MyProjectHealthCheck extends HealthCheck {
-
-    // note that this is due to the default spring CTR
-    public MyProjectHealthCheck() {
-        super("MyProjectHealthCheck");
-    }
 
     @Override
     protected Result check() throws Exception {

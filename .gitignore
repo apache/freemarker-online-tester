@@ -27,3 +27,4 @@ freemarker-online.ipr
 freemarker-online.iws
 **/.DS_Store
 
+/out/

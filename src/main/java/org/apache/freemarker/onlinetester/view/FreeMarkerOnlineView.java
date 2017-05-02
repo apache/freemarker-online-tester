@@ -26,11 +26,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import io.dropwizard.views.View;
 import org.apache.commons.lang3.StringUtils;
 
 import org.apache.freemarker.onlinetester.model.SelectionOption;
 import org.apache.freemarker.onlinetester.services.AllowedSettingValuesMaps;
-import com.yammer.dropwizard.views.View;
 
 import freemarker.template.Configuration;
 
