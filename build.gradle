@@ -18,11 +18,11 @@
  */
 
 group = 'org.apache.freemarker.onlinetester'
-project.projectName = "freemarker-online"
+project.ext.projectName = "freemarker-online"
 def BUILD_NUMBER = project.hasProperty('BUILD_NUMBER') ? "$BUILD_NUMBER" : 'undef'
 project.version = "0.1.$BUILD_NUMBER"
-project.yml = "$rootDir/src/main/resources/${projectName}.yml"
-project.jarName = "$rootDir/build/libs/${projectName}-${project.version}.jar"
+project.ext.yml = "$rootDir/src/main/resources/${projectName}.yml"
+project.ext.jarName = "${projectName}-${project.version}"
 
 apply from: "intellij.gradle"
 apply from: "${rootDir}/dependencies.gradle"
@@ -30,20 +30,20 @@ apply plugin: 'maven'
 apply plugin: 'java'
 apply plugin: 'jacoco'
 apply plugin: 'project-report'
-apply plugin: 'fatjar'
 apply plugin: 'fpm-packaging'
+apply plugin: 'com.github.johnrengelman.shadow'
 
 // Because Spring 3 doesn't officially support Java 8, and indeed asm fails with it:
 // Must be after `apply plugin: 'java'`!
-project.sourceCompatibility = "1.7"
-project.targetCompatibility = "1.7"
+project.sourceCompatibility = "1.8"
+project.targetCompatibility = "1.8"
 
 buildscript {
     repositories {
         mavenCentral()
     }
     dependencies {
-        classpath 'eu.appsatori:gradle-fatjar-plugin:0.2-rc1'
+
         classpath 'com.kenshoo:gradle-fpm:+'
     }
 }
@@ -51,6 +51,17 @@ buildscript {
 repositories {
     mavenCentral()
 
+}
+
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "com.github.jengelman.gradle.plugins:shadow:1.2.4"
+    }
 }
 
 dependencies {
@@ -92,10 +103,10 @@ compileTestJava {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '1.10'
+    gradleVersion = '3.5'
 }
 
-fatJar {
+jar {
     exclude "META-INF/*.SF"
     exclude "META-INF/*.DSA"
     exclude "META-INF/*.RSA"
@@ -105,11 +116,7 @@ fatJar {
     }
 }
 
-// this merges the spring files into META-INF properly
-fatJarPrepareFiles {
-    include 'META-INF/spring.handlers'
-    include 'META-INF/spring.schemas'
-}
+
 
 // wrap jar, upstart and yml into deb package:
 
@@ -142,8 +149,14 @@ packaging {
     baseDir = stagingDir
 }
 
+shadowJar {
+    baseName = "${jarName}"
+    classifier = null
+    version = null
+    mergeServiceFiles()
+}
 
-fatJar.dependsOn jar
-build.dependsOn fatJar
+shadowJar.dependsOn jar
+build.dependsOn shadowJar
 stageFiles.dependsOn build
 debian.dependsOn stageFiles
