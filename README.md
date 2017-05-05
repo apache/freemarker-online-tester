@@ -19,7 +19,7 @@
  
 ```
 
-freemarker-online
+freemarker-online   [![Build Status](https://travis-ci.org/apache/incubator-freemarker-online-tester.svg?branch=master)](https://travis-ci.org/apache/incubator-freemarker-online-tester)
 ====================
 
 freemarker-online is a tool for any freemarker users to evalaute their freemarker expressions with an input.
@@ -29,7 +29,7 @@ For a deployed version of this tool you can visit http://freemarker-online.kensh
 Development Instuctions
 ------------------------
 * Clone the repository to a local directory
-* Run "./gradlew build" from the cloned directory (use JDK 7, not 8!)
+* Run "./gradlew build" from the cloned directory (use JDK 8)
 * If you want to run it using IDEA run "./gradlew cleanidea idea" - this will generate the IDEA project for you.
 * For running the software from a command line, build `fatJar` (not `jar`) and then just hit "java -jar build/libs/freemarker-online-0.1.undef.jar server  src/main/resources/freemarker-online.yml"
 
