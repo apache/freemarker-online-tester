@@ -19,7 +19,7 @@
  
 ```
 
-freemarker-online   [![Build Status](https://travis-ci.org/apache/incubator-freemarker-online-tester.svg?branch=master)](https://travis-ci.org/apache/incubator-freemarker-online-tester)
+freemarker-online   [![Build Status](https://travis-ci.org/apache/incubator-freemarker-online-tester.svg?branch=master)](https://travis-ci.org/apache/incubator-freemarker-online-tester) [![Coverage Status](https://coveralls.io/repos/github/apache/incubator-freemarker-online-tester/badge.svg?branch=master)](https://coveralls.io/github/apache/incubator-freemarker-online-tester?branch=master)
 ====================
 
 freemarker-online is a tool for any freemarker users to evalaute their freemarker expressions with an input.
