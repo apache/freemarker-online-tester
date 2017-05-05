@@ -32,6 +32,7 @@ apply plugin: 'jacoco'
 apply plugin: 'project-report'
 apply plugin: 'fpm-packaging'
 apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: "com.github.kt3k.coveralls"
 
 // Because Spring 3 doesn't officially support Java 8, and indeed asm fails with it:
 // Must be after `apply plugin: 'java'`!
@@ -60,6 +61,7 @@ buildscript {
         }
     }
     dependencies {
+        classpath "org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.8.1"
         classpath "com.github.jengelman.gradle.plugins:shadow:1.2.4"
     }
 }
@@ -155,6 +157,14 @@ shadowJar {
     version = null
     mergeServiceFiles()
 }
+
+jacocoTestReport {
+    reports {
+        xml.enabled  true
+    }
+}
+
+check.dependsOn jacocoTestReport
 
 shadowJar.dependsOn jar
 build.dependsOn shadowJar
