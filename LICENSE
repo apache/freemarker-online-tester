@@ -211,13 +211,3 @@
        src/main/resources/banner.txt
 
    =========================================================================
-
-   The Apache FreeMarker Online Tester (incubating) source code contains the
-   following files, which are generated files, and hence no license applies:
-
-       gradle/wrapper/gradle-wrapper.jar
-       gradle/wrapper/gradle-wrapper.properties
-       gradlew
-       gradlew.bat
-
-   =========================================================================
