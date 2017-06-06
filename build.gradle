@@ -158,6 +158,12 @@ shadowJar {
     mergeServiceFiles()
 }
 
+// Log full exception information on failed tests, so we see it in the Travis log:
+test.testLogging {
+    showStackTraces true
+    exceptionFormat "full"
+}
+
 jacocoTestReport {
     reports {
         xml.enabled  true
