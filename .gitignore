@@ -15,16 +15,38 @@
 # specific language governing permissions and limitations
 # under the License.
 
-bin/
+**/build/
+/.out/
+/bin/
+/.bin/
 /target/
-/.settings/
-/.project
-.gradle/
-.java-version
-build/
-freemarker-online.iml
-freemarker-online.ipr
-freemarker-online.iws
-**/.DS_Store
 
+/gradle.properties
+/archive/
+/META-INF
+
+.classpath
+.project
+.settings
+
+.idea/
+*.iml
+*.iws
+*.ipr
+.idea_modules/
 /out/
+
+*.tmp
+*.bak
+*.swp
+*~
+
+.gradle
+
+.DS_Store*
+.AppleDouble
+.LSOverride
+
+.directory
+.Trash*
+
