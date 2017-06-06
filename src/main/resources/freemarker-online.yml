@@ -16,13 +16,13 @@
 # under the License.
 
 logging:
-  level: INFO
+  level: WARN
   appenders:
     - type: file
-      currentLogFilename: /var/log/freemarker-online/freemarker-online.log
+      currentLogFilename: /opt/fmonlinetester/var/log/fmonlinetester.log
       threshold: ALL
       archive: true
-      archivedLogFilenamePattern: /var/log/freemarker-online/freemarker-online-%d.log.gz
+      archivedLogFilenamePattern: /opt/fmonlinetester/var/log/fmonlinetester-%d.log.gz
       archivedFileCount: 5
       timeZone: UTC
       logFormat:
