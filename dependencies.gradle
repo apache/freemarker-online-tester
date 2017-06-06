@@ -59,7 +59,7 @@ project.libraries = [
         jersey_grrizle: 'com.sun.jersey.jersey-test-framework:jersey-test-framework-grizzly:1.17',
 
         // Others
-        freemarker: 'org.freemarker:freemarker:2.3.24-incubating',
+        freemarker: 'org.freemarker:freemarker:2.3.26-incubating',
         jackson_databind: "com.fasterxml.jackson.core:jackson-databind:$jackson_version",
         commonLangs: "org.apache.commons:commons-lang3:3.3.2",
         findBugs: "com.google.code.findbugs:annotations:3.0.0"
