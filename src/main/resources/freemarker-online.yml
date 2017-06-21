@@ -16,18 +16,23 @@
 # under the License.
 
 logging:
-  level: WARN
+  level: INFO
   appenders:
-    - type: file
-      currentLogFilename: /opt/fmonlinetester/var/log/fmonlinetester.log
-      threshold: ALL
-      archive: true
-      archivedLogFilenamePattern: /opt/fmonlinetester/var/log/fmonlinetester-%d.log.gz
-      archivedFileCount: 5
-      timeZone: UTC
-      logFormat:
+    # For development:
     - type: console
       threshold: ALL
-      timeZone: UTC
       target: stdout
-      logFormat:
+#    # For production:
+#    - type: file
+#      currentLogFilename: /opt/fmonlinetester/var/log/fmonlinetester.log
+#      threshold: ALL
+#      archive: true
+#      archivedLogFilenamePattern: /opt/fmonlinetester/var/log/fmonlinetester-%d.log.gz
+#      archivedFileCount: 5
+#      timeZone: UTC
+#      logFormat:
+server:
+  requestLog:
+    appenders:
+      - type: console
+        threshold: OFF
