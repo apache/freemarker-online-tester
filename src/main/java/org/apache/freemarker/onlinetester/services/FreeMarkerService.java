@@ -34,16 +34,12 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.freemarker.onlinetester.util.LengthLimitExceededException;
 import org.apache.freemarker.onlinetester.util.LengthLimitedWriter;
 import org.eclipse.jetty.util.BlockingArrayQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-
-import org.apache.freemarker.onlinetester.util.LengthLimitExceededException;
 
 import freemarker.core.FreeMarkerInternalsAccessor;
 import freemarker.core.OutputFormat;
@@ -55,13 +51,11 @@ import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
 
-@Service
 public class FreeMarkerService {
 
     private static final int DEFAULT_MAX_OUTPUT_LENGTH = 100000;
     private static final int DEFAULT_MAX_THREADS = Math.max(2,
             (int) Math.round(Runtime.getRuntime().availableProcessors() * 3.0 / 4));
-    /** Not implemented yet, will need 2.3.22, even then a _CoreAPI call. */
     private static final long DEFAULT_MAX_TEMPLATE_EXECUTION_TIME = 2000;
     private static final int MIN_DEFAULT_MAX_QUEUE_LENGTH = 2;
     private static final int MAX_DEFAULT_MAX_QUEUE_LENGTH_MILLISECONDS = 30000;
@@ -75,17 +69,32 @@ public class FreeMarkerService {
     
     private static final Logger logger = LoggerFactory.getLogger(FreeMarkerService.class);
 
-    private final Configuration freeMarkerConfig;
-    
-    private ExecutorService templateExecutor;
-    
-    private int maxOutputLength = DEFAULT_MAX_OUTPUT_LENGTH;
-    
-    private int maxThreads = DEFAULT_MAX_THREADS;
-    private Integer maxQueueLength;
-    private long maxTemplateExecutionTime = DEFAULT_MAX_TEMPLATE_EXECUTION_TIME;
+    private final int maxOutputLength;
+    private final int maxThreads;
+    private final Integer maxQueueLength;
+    private final long maxTemplateExecutionTime;
 
-    public FreeMarkerService() {
+    private final Configuration freeMarkerConfig;
+    private final ExecutorService templateExecutor;
+    
+    private FreeMarkerService(Builder bulder) {
+        maxOutputLength = bulder.getMaxOutputLength();
+        maxThreads = bulder.getMaxThreads();
+        maxQueueLength = bulder.getMaxQueueLength();
+        maxTemplateExecutionTime = bulder.getMaxTemplateExecutionTime();
+
+        int actualMaxQueueLength = maxQueueLength != null
+                ? maxQueueLength
+                : Math.max(
+                        MIN_DEFAULT_MAX_QUEUE_LENGTH,
+                        (int) (MAX_DEFAULT_MAX_QUEUE_LENGTH_MILLISECONDS / maxTemplateExecutionTime));
+        ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(
+                maxThreads, maxThreads,
+                THREAD_KEEP_ALIVE_TIME, TimeUnit.MILLISECONDS,
+                new BlockingArrayQueue<Runnable>(actualMaxQueueLength));
+        threadPoolExecutor.allowCoreThreadTimeOut(true);
+        templateExecutor = threadPoolExecutor;
+
         freeMarkerConfig = new Configuration(Configuration.getVersion());
         freeMarkerConfig.setNewBuiltinClassResolver(TemplateClassResolver.ALLOWS_NOTHING_RESOLVER);
         freeMarkerConfig.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
@@ -192,32 +201,16 @@ public class FreeMarkerService {
         return maxOutputLength;
     }
 
-    public void setMaxOutputLength(int maxOutputLength) {
-        this.maxOutputLength = maxOutputLength;
-    }
-
     public int getMaxThreads() {
         return maxThreads;
-    }
-    
-    public void setMaxThreads(int maxThreads) {
-        this.maxThreads = maxThreads;
     }
     
     public int getMaxQueueLength() {
         return maxQueueLength;
     }
     
-    public void setMaxQueueLength(int maxQueueLength) {
-        this.maxQueueLength = maxQueueLength;
-    }
-
     public long getMaxTemplateExecutionTime() {
         return maxTemplateExecutionTime;
-    }
-    
-    public void setMaxTemplateExecutionTime(long maxTemplateExecutionTime) {
-        this.maxTemplateExecutionTime = maxTemplateExecutionTime;
     }
 
     /**
@@ -232,21 +225,6 @@ public class FreeMarkerService {
         return new FreeMarkerServiceResponse.Builder().buildForFailure(e);
     }
 
-    @PostConstruct
-    public void postConstruct() {
-        int actualMaxQueueLength = maxQueueLength != null
-                ? maxQueueLength
-                : Math.max(
-                        MIN_DEFAULT_MAX_QUEUE_LENGTH,
-                        (int) (MAX_DEFAULT_MAX_QUEUE_LENGTH_MILLISECONDS / maxTemplateExecutionTime));
-        ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(
-                maxThreads, maxThreads,
-                THREAD_KEEP_ALIVE_TIME, TimeUnit.MILLISECONDS,
-                new BlockingArrayQueue<Runnable>(actualMaxQueueLength));
-        threadPoolExecutor.allowCoreThreadTimeOut(true);
-        templateExecutor = threadPoolExecutor;
-    }
-    
     private class CalculateTemplateOutput implements Callable<FreeMarkerServiceResponse> {
         
         private boolean templateExecutionStarted;
@@ -359,6 +337,49 @@ public class FreeMarkerService {
             return templateExecutorThread;
         }
         
+    }
+
+    public static class Builder {
+        private int maxOutputLength = DEFAULT_MAX_OUTPUT_LENGTH;
+        private int maxThreads = DEFAULT_MAX_THREADS;
+        private Integer maxQueueLength;
+        private long maxTemplateExecutionTime = DEFAULT_MAX_TEMPLATE_EXECUTION_TIME;
+
+        public int getMaxOutputLength() {
+            return maxOutputLength;
+        }
+
+        public void setMaxOutputLength(int maxOutputLength) {
+            this.maxOutputLength = maxOutputLength;
+        }
+
+        public int getMaxThreads() {
+            return maxThreads;
+        }
+
+        public void setMaxThreads(int maxThreads) {
+            this.maxThreads = maxThreads;
+        }
+
+        public Integer getMaxQueueLength() {
+            return maxQueueLength;
+        }
+
+        public void setMaxQueueLength(Integer maxQueueLength) {
+            this.maxQueueLength = maxQueueLength;
+        }
+
+        public long getMaxTemplateExecutionTime() {
+            return maxTemplateExecutionTime;
+        }
+
+        public void setMaxTemplateExecutionTime(long maxTemplateExecutionTime) {
+            this.maxTemplateExecutionTime = maxTemplateExecutionTime;
+        }
+
+        public FreeMarkerService build() {
+            return new FreeMarkerService(this);
+        }
     }
 
 }

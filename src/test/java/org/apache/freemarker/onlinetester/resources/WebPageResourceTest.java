@@ -40,10 +40,10 @@ import org.apache.freemarker.onlinetester.view.FreeMarkerOnlineView;
 import freemarker.core.OutputFormat;
 
 @RunWith(MockitoJUnitRunner.class)
-public class FreeMarkerOnlineResourceTest {
+public class WebPageResourceTest {
 
     @InjectMocks
-    FreeMarkerOnlineResource freeMarkerOnlineResultResource;
+    WebPageResource webPageResource;
 
     @Mock
     FreeMarkerService freeMarkerService;
@@ -53,7 +53,7 @@ public class FreeMarkerOnlineResourceTest {
         when(freeMarkerService.calculateTemplateOutput(
                 anyString(), anyMap(), any(OutputFormat.class), any(Locale.class), any(TimeZone.class)))
                 .thenThrow(new AssertionError());
-        FreeMarkerOnlineView view = freeMarkerOnlineResultResource.blankForm();
+        FreeMarkerOnlineView view = webPageResource.blankForm();
         assertEquals(view.getTemplate(), "");
         assertEquals(view.getDataModel(), "");
     }
@@ -63,8 +63,9 @@ public class FreeMarkerOnlineResourceTest {
         when(freeMarkerService.calculateTemplateOutput(
                 anyString(), anyMap(), any(OutputFormat.class), any(Locale.class), any(TimeZone.class)))
                 .thenThrow(new AssertionError());
-        FreeMarkerOnlineView view = freeMarkerOnlineResultResource.formResult(null, null, null, null, null);
+        FreeMarkerOnlineView view = webPageResource.formResult(null, null, null, null, null);
         assertEquals(view.getTemplate(), "");
         assertEquals(view.getDataModel(), "");
     }
+    
 }

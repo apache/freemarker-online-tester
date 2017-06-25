@@ -34,7 +34,7 @@ import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilder;
 
-import org.springframework.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Document;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
@@ -85,7 +85,7 @@ public final class DataModelParser {
     }
 
     public static Map<String, Object> parse(String src, TimeZone timeZone) throws DataModelParsingException {
-        if (!StringUtils.hasText(src)) {
+        if (StringUtils.isBlank(src)) {
             return Collections.emptyMap();
         }
 

@@ -27,13 +27,13 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import org.springframework.stereotype.Component;
-
 import org.apache.freemarker.onlinetester.view.FreeMarkerOnlineView;
 
+/**
+ * The HTML web page shown in the browser.
+ */
 @Path("/")
-@Component
-public class FreeMarkerOnlineResource {
+public class WebPageResource {
 
     @GET
     @Produces(MediaType.TEXT_HTML)

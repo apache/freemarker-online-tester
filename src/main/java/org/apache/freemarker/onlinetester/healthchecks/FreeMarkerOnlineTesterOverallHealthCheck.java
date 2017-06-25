@@ -20,10 +20,8 @@
 package org.apache.freemarker.onlinetester.healthchecks;
 
 import com.codahale.metrics.health.HealthCheck;
-import org.springframework.stereotype.Component;
 
-@Component
-public class MyProjectHealthCheck extends HealthCheck {
+public class FreeMarkerOnlineTesterOverallHealthCheck extends HealthCheck {
 
     @Override
     protected Result check() throws Exception {

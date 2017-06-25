@@ -17,25 +17,32 @@
  * under the License.
  */
 
-package org.apache.freemarker.onlinetester.platform;
+package org.apache.freemarker.onlinetester;
 
-import com.google.common.io.Resources;
-import io.dropwizard.testing.junit.DropwizardAppRule;
+import static org.junit.Assert.assertEquals;
 
 import org.apache.freemarker.onlinetester.dropwizard.FreeMarkerOnlineTester;
 import org.apache.freemarker.onlinetester.dropwizard.FreeMarkerOnlineTesterConfiguration;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 
-public class DropWizardServiceTest {
+import com.google.common.io.Resources;
+
+import io.dropwizard.testing.junit.DropwizardAppRule;
+
+public class ApplicationStartsTest {
+
     @ClassRule
-    public static TestRule testRule = new DropwizardAppRule<FreeMarkerOnlineTesterConfiguration>(FreeMarkerOnlineTester.class,
+    public final static DropwizardAppRule RULE = new DropwizardAppRule<FreeMarkerOnlineTesterConfiguration>
+            (FreeMarkerOnlineTester.class,
             Resources.getResource("freemarker-online.yml").getPath());
 
 
     @Test
-    public void testServerIsUp() throws Exception {
-        ((DropwizardAppRule) testRule).getApplication();
+    public void test() throws Exception {
+        assertEquals(
+                200,
+                RULE.client().target("http://localhost:" + RULE.getLocalPort() + "/").request().get().getStatus());
     }
+
 }

@@ -55,30 +55,16 @@ dependencies {
     compile libraries.dropwizard_views
     compile libraries.dropwizard_views_freemarker
     compile libraries.dropwizard_assets
-    compile libraries.springCore
-    compile libraries.springContext
-    compile libraries.springContextSupport
-    compile libraries.springExpression
-    compile libraries.springSecurityCore
-    compile libraries.springTransaction
-    compile libraries.springBeans
-    compile libraries.springWeb
-
-    testCompile libraries.dropwizard_testing
-    testCompile libraries.springTest
-    testCompile libraries.junit
-    testCompile libraries.mockito
-    testCompile libraries.hamcrest
-
     compile libraries.freemarker
     compile libraries.jackson_databind
     compile libraries.commonLangs
     compile libraries.findBugs
 
-    testCompile libraries.selenium_java
+    testCompile libraries.dropwizard_testing
+    testCompile libraries.junit
+    testCompile libraries.mockito
+    testCompile libraries.hamcrest
     testCompile libraries.jersey_grrizle
-    testCompile libraries.jersey_client
-    testCompile libraries.springJersey
 }
 
 compileJava {

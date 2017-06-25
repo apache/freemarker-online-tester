@@ -36,13 +36,10 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.freemarker.onlinetester.model.ErrorCode;
-import org.apache.freemarker.onlinetester.model.ExecuteResourceProblem;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import org.apache.freemarker.onlinetester.model.ErrorResponse;
 import org.apache.freemarker.onlinetester.model.ExecuteRequest;
 import org.apache.freemarker.onlinetester.model.ExecuteResourceField;
+import org.apache.freemarker.onlinetester.model.ExecuteResourceProblem;
 import org.apache.freemarker.onlinetester.model.ExecuteResponse;
 import org.apache.freemarker.onlinetester.services.AllowedSettingValuesMaps;
 import org.apache.freemarker.onlinetester.services.FreeMarkerService;
@@ -54,8 +51,7 @@ import org.apache.freemarker.onlinetester.util.ExceptionUtils;
 import freemarker.core.OutputFormat;
 
 @Path("/api/execute")
-@Component
-public class FreeMarkerOnlineExecuteResource {
+public class ExecuteApiResource {
     private static final int MAX_TEMPLATE_INPUT_LENGTH = 10000;
 
     private static final int MAX_DATA_MODEL_INPUT_LENGTH = 10000;
@@ -77,8 +73,11 @@ public class FreeMarkerOnlineExecuteResource {
     static final String DATA_MODEL_ERROR_MESSAGE_FOOTER = "Note: This is NOT a FreeMarker error message. "
             + "The data model syntax is specific to this online service.";
 
-    @Autowired
-    private FreeMarkerService freeMarkerService;
+    private final FreeMarkerService freeMarkerService;
+
+    public ExecuteApiResource(FreeMarkerService freeMarkerService) {
+        this.freeMarkerService = freeMarkerService;
+    }
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
@@ -141,7 +140,7 @@ public class FreeMarkerOnlineExecuteResource {
 
     private Map<String, Object> getDataModel(ExecuteRequest req, List<ExecuteResourceProblem> problems) {
         String dataModel = req.getDataModel();
-        
+
         if (dataModel.length() > MAX_DATA_MODEL_INPUT_LENGTH) {
             String error = formatMessage(
                     MAX_DATA_MODEL_INPUT_LENGTH_EXCEEDED_ERROR_MESSAGE, MAX_DATA_MODEL_INPUT_LENGTH);

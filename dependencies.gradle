@@ -17,51 +17,32 @@
  * under the License.
  */
 
-project.ext.set("libraries", "")
-ext.dw_version = "1.1.1";
-ext.spring_version = "4.3.9.RELEASE";
+ext.dropwizard_version = "1.1.1";
 ext.jackson_version = "2.8.9";
+ext.jeresy_version = "2.25";
+ext.libraries = [
+        // Dropwizard:
+        dropwizard: "io.dropwizard:dropwizard-core:$dropwizard_version",
+        dropwizard_client: "io.dropwizard:dropwizard-client:$dropwizard_version",
+        dropwizard_views: "io.dropwizard:dropwizard-views:$dropwizard_version",
+        dropwizard_views_freemarker: "io.dropwizard:dropwizard-views-freemarker:$dropwizard_version",
+        dropwizard_assets: "io.dropwizard:dropwizard-assets:$dropwizard_version",
 
-project.libraries = [
-        dropwizard: "io.dropwizard:dropwizard-core:$dw_version",
-        dropwizard_client: "io.dropwizard:dropwizard-client:$dw_version",
-        dropwizard_views: "io.dropwizard:dropwizard-views:$dw_version",
-        dropwizard_views_freemarker: "io.dropwizard:dropwizard-views-freemarker:$dw_version",
-        dropwizard_assets: "io.dropwizard:dropwizard-assets:$dw_version",
-        guava: 'com.google.guava:guava:13.0.1',
-        jersey_core: 'com.sun.jersey:jersey-core:1.1.4.1',
-
-        //Spring
-        springCore: "org.springframework:spring-core:$spring_version",
-        springContext: "org.springframework:spring-context:$spring_version",
-        springContextSupport: "org.springframework:spring-context-support:$spring_version",
-        springExpression: "org.springframework:spring-expression:$spring_version",
-        springTransaction: "org.springframework:spring-tx:$spring_version",
-        springBeans: "org.springframework:spring-beans:$spring_version",
-        springJersey: "com.sun.jersey.contribs:jersey-spring:1.7",
-        springWeb: "org.springframework:spring-web:$spring_version",
-
-        // Security
-        // Spring and Spring Security support for dropwizard
-        springSecurityCore: "org.springframework.security:spring-security-core:3.1.4.RELEASE",
-        dropwizardAuth: "io.dropwizard:dropwizard-auth:$dw_version",
-
-        // Spring test
-        springTest: "org.springframework:spring-test:$spring_version",
-
-        //Test libs
-        dropwizard_testing: "io.dropwizard:dropwizard-testing:$dw_version",
-        junit: 'junit:junit-dep:4.11',
-        mockito: 'org.mockito:mockito-core:1.9.0',
-        hamcrest: 'org.hamcrest:hamcrest-library:1.3',
-        selenium_java: 'org.seleniumhq.selenium:selenium-java:2.41.0',
-        jersey_client: 'com.sun.jersey:jersey-client:1.17.1',
-        jersey_grrizle: 'com.sun.jersey.jersey-test-framework:jersey-test-framework-grizzly:1.17',
-
-        // Others
-        freemarker: 'org.freemarker:freemarker:2.3.26-incubating',
+        // App. specific:
+        freemarker: "org.freemarker:freemarker:2.3.26-incubating",
+        jersey_core: "org.glassfish.jersey.core:jersey-core:$jeresy_version",
         jackson_databind: "com.fasterxml.jackson.core:jackson-databind:$jackson_version",
-        commonLangs: "org.apache.commons:commons-lang3:3.3.2",
-        findBugs: "com.google.code.findbugs:annotations:3.0.0"
 
+        // Commons:
+        findBugs: "com.google.code.findbugs:annotations:3.0.0",
+        commonLangs: "org.apache.commons:commons-lang3:3.3.2",
+        guava: "com.google.guava:guava:13.0.1",
+
+        // Test:
+        dropwizard_testing: "io.dropwizard:dropwizard-testing:$dropwizard_version",
+        dropwizard_client: "io.dropwizard:dropwizard-client:$dropwizard_version",
+        junit: "junit:junit-dep:4.11",
+        mockito: "org.mockito:mockito-core:1.9.0",
+        hamcrest: "org.hamcrest:hamcrest-library:1.3",
+        jersey_grrizle: "org.glassfish.jersey.test-framework.providers:jersey-test-framework-provider-grizzly2:$jeresy_version"
 ]

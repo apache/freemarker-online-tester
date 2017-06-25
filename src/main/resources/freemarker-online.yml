@@ -33,6 +33,4 @@ logging:
 #      logFormat:
 server:
   requestLog:
-    appenders:
-      - type: console
-        threshold: OFF
+    appenders: []
