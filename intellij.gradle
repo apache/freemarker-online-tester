@@ -21,7 +21,7 @@ apply plugin: 'idea'
 
 idea {
     project {
-        jdkName = '1.7'
+        jdkName = '1.8'
     }
 }
 

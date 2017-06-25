@@ -18,11 +18,9 @@
  */
 
 group = 'org.apache.freemarker.onlinetester'
-project.ext.projectName = "freemarker-online"
-def BUILD_NUMBER = project.hasProperty('BUILD_NUMBER') ? "$BUILD_NUMBER" : 'undef'
-project.version = "0.1.$BUILD_NUMBER"
-project.ext.yml = "$rootDir/src/main/resources/${projectName}.yml"
-project.ext.jarName = "${projectName}-${project.version}"
+version = "0.1-SNAPSHOT"
+
+ext.jarName = "${project.name}-${project.version}"
 
 apply from: "intellij.gradle"
 apply from: "${rootDir}/dependencies.gradle"
@@ -30,28 +28,14 @@ apply plugin: 'maven'
 apply plugin: 'java'
 apply plugin: 'jacoco'
 apply plugin: 'project-report'
-apply plugin: 'fpm-packaging'
 apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: "com.github.kt3k.coveralls"
 
-// Because Spring 3 doesn't officially support Java 8, and indeed asm fails with it:
-// Must be after `apply plugin: 'java'`!
 project.sourceCompatibility = "1.8"
 project.targetCompatibility = "1.8"
 
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-
-        classpath 'com.kenshoo:gradle-fpm:+'
-    }
-}
-
 repositories {
     mavenCentral()
-
 }
 
 buildscript {
@@ -109,49 +93,14 @@ task wrapper(type: Wrapper) {
 }
 
 jar {
-    exclude "META-INF/*.SF"
-    exclude "META-INF/*.DSA"
-    exclude "META-INF/*.RSA"
     manifest {
         attributes 'Main-Class': 'org.apache.freemarker.onlinetester.dropwizard.FreeMarkerOnlineTester'
         attributes 'Implementation-Version': "$version"
     }
 }
 
-
-
-// wrap jar, upstart and yml into deb package:
-
-def stagingDir = new File(project.buildDir, "staging")
-
-task stageArtifacts(type: Copy) {
-    stagingDir.mkdir()
-    // place yml file and jar under staging dir
-    into new File(stagingDir, "/opt/${projectName}")
-    from "build/resources/main/${projectName}.yml"
-    from 'build/libs'
-}
-
-task stageStartScript << {
-    new File(stagingDir, "opt/${projectName}/start").withWriter("UTF-8") {
-        it.println "#!/usr/bin/env sh\n" +
-                " set -e\n" +
-                " exec java \$* -jar ${project.name}-${project.version}.jar server ${project.name}.yml"
-    }
-}
-
-task stageFiles(dependsOn: [stageArtifacts, stageStartScript]) << {
-    println "staging debian files"
-}
-
-// configure plugin to package the staging dir we've
-// just created, and to declare java-7 dependency
-packaging {
-    dependencies = ['openjdk-7-jre']
-    baseDir = stagingDir
-}
-
 shadowJar {
+    dependsOn jar
     baseName = "${jarName}"
     classifier = null
     version = null
@@ -171,8 +120,4 @@ jacocoTestReport {
 }
 
 check.dependsOn jacocoTestReport
-
-shadowJar.dependsOn jar
 build.dependsOn shadowJar
-stageFiles.dependsOn build
-debian.dependsOn stageFiles
