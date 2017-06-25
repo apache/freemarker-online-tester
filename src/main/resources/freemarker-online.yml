@@ -24,10 +24,10 @@ logging:
       target: stdout
 #    # For production:
 #    - type: file
-#      currentLogFilename: /opt/fmonlinetester/var/log/fmonlinetester.log
+#      currentLogFilename: /opt/fmonlinetester/var/log/main.log
 #      threshold: ALL
 #      archive: true
-#      archivedLogFilenamePattern: /opt/fmonlinetester/var/log/fmonlinetester-%d.log.gz
+#      archivedLogFilenamePattern: /opt/fmonlinetester/var/log/main-%d.log.gz
 #      archivedFileCount: 5
 #      timeZone: UTC
 #      logFormat:
