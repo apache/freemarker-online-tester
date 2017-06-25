@@ -8,6 +8,8 @@ import org.apache.freemarker.onlinetester.services.FreeMarkerService;
 
 import io.dropwizard.Application;
 import io.dropwizard.assets.AssetsBundle;
+import io.dropwizard.bundles.redirect.RedirectBundle;
+import io.dropwizard.bundles.redirect.UriRedirect;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.dropwizard.views.ViewBundle;
@@ -35,5 +37,10 @@ public class FreeMarkerOnlineTester extends Application<FreeMarkerOnlineTesterCo
     public void initialize(Bootstrap<FreeMarkerOnlineTesterConfiguration> bootstrap) {
         bootstrap.addBundle(new ViewBundle<>());
         bootstrap.addBundle(new AssetsBundle());
+        bootstrap.addBundle(new RedirectBundle(
+                new UriRedirect(
+                        "http://freemarker-online.kenshoo.com([:/].*)$",
+                        "http://try.freemarker.org$1")
+        ));
     }
 }
