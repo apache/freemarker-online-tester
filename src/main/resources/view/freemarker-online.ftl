@@ -111,13 +111,17 @@ someXML = &lt;example x="1"&gt;text&lt;/example&gt;</pre></div>
                 >${dataModel}</textarea>
                 <div class="formPanel">
                   <div class="horizontalBox">
-                    <@u.htmlSelect caption="Output format" name="outputFormat" selectionOptions=outputFormats />
+                    <@u.htmlSelect caption="Output format" name="outputFormat" selectionOptions=outputFormats
+                        helpLink='http://freemarker.apache.org/docs/dgui_misc_autoescaping.html'
+                        helpHover='Influences auto-escaping' />
                   </div>
                   <div class="horizontalBox">
-                    <@u.htmlSelect caption="Locale" name="locale" selectionOptions=locales />
+                    <@u.htmlSelect caption="Locale" name="locale" selectionOptions=locales
+                    	helpHover='Influences how numbers and date/time values are formatted' />
                   </div>
                   <div class="horizontalBox">
-                    <@u.htmlSelect caption="Time zone" name="timeZone" selectionOptions=timeZones />
+                    <@u.htmlSelect caption="Time zone" name="timeZone" selectionOptions=timeZones
+                    	helpHover='Date/time values are shown as seen from this time zone' />
                   </div>
                 </div>
                 <div class="formBottomButtonsContainer">

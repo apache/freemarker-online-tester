@@ -23,10 +23,10 @@
 
 -->
 
-<#macro htmlSelect caption name selectionOptions>
-  <div>${caption}:</div>
+<#macro htmlSelect caption name selectionOptions helpLink='' helpHover=''>
+  <div <@titleAttr helpHover />>${caption}<#if helpLink != ''> (<a href='${helpLink}' target='_blank'>?</a>)</#if></div>
   <div> 
-    <select name="${name}" id="${name}" class="pure-input-1">
+    <select name="${name}" id="${name}" class="pure-input-1" <@titleAttr helpHover />>
       <#list selectionOptions as selectionOption>
         <#local value = selectionOption.value>
         <option value="${value}"<#if value == .vars[name]!> selected</#if>>${selectionOption.label}</option>
@@ -34,3 +34,5 @@
     </select>
   </div>
 </#macro>
+
+<#macro titleAttr title><#if title != ''>title="${title}"</#if></#macro>
