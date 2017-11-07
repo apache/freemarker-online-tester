@@ -34,3 +34,9 @@ logging:
 server:
   requestLog:
     appenders: []
+viewRendererConfiguration:
+  .ftl:
+    incompatibleImprovements: 2.3.27
+    locale: en_US
+    timeZone: UTC
+    outputEncoding: UTF-8

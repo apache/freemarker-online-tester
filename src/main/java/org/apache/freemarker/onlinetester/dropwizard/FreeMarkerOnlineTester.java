@@ -1,6 +1,8 @@
 package org.apache.freemarker.onlinetester.dropwizard;
 
 
+import java.util.Map;
+
 import org.apache.freemarker.onlinetester.healthchecks.FreeMarkerOnlineTesterOverallHealthCheck;
 import org.apache.freemarker.onlinetester.resources.ExecuteApiResource;
 import org.apache.freemarker.onlinetester.resources.WebPageResource;
@@ -35,7 +37,12 @@ public class FreeMarkerOnlineTester extends Application<FreeMarkerOnlineTesterCo
 
     @Override
     public void initialize(Bootstrap<FreeMarkerOnlineTesterConfiguration> bootstrap) {
-        bootstrap.addBundle(new ViewBundle<>());
+        bootstrap.addBundle(new ViewBundle<FreeMarkerOnlineTesterConfiguration>() {
+            @Override
+            public Map<String, Map<String, String>> getViewConfiguration(FreeMarkerOnlineTesterConfiguration config) {
+                return config.getViewRendererConfiguration();
+            }        	
+        });
         bootstrap.addBundle(new AssetsBundle());
         bootstrap.addBundle(new RedirectBundle(
                 new UriRedirect(
