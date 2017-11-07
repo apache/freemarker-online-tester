@@ -41,11 +41,13 @@ import org.eclipse.jetty.util.BlockingArrayQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import freemarker.core.Environment;
 import freemarker.core.FreeMarkerInternalsAccessor;
 import freemarker.core.OutputFormat;
 import freemarker.core.ParseException;
 import freemarker.core.TemplateClassResolver;
 import freemarker.core.TemplateConfiguration;
+import freemarker.template.AttemptExceptionReporter;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -99,6 +101,12 @@ public class FreeMarkerService {
         freeMarkerConfig.setNewBuiltinClassResolver(TemplateClassResolver.ALLOWS_NOTHING_RESOLVER);
         freeMarkerConfig.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
         freeMarkerConfig.setLogTemplateExceptions(false);
+        freeMarkerConfig.setAttemptExceptionReporter(new AttemptExceptionReporter() {
+			@Override
+			public void report(TemplateException te, Environment env) {
+				// Suppress it
+			}
+        });
         freeMarkerConfig.setLocale(AllowedSettingValuesMaps.DEFAULT_LOCALE);
         freeMarkerConfig.setTimeZone(AllowedSettingValuesMaps.DEFAULT_TIME_ZONE);
         freeMarkerConfig.setOutputFormat(AllowedSettingValuesMaps.DEFAULT_OUTPUT_FORMAT);
