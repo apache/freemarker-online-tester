@@ -30,7 +30,7 @@ ext.libraries = [
         dropwizard_bundles_redirect: "io.dropwizard-bundles:dropwizard-redirect-bundle:1.0.5",
 
         // App. specific:
-        freemarker: "org.freemarker:freemarker:2.3.26-incubating",
+        freemarker: "org.freemarker:freemarker:2.3.27-incubating",
         jersey_core: "org.glassfish.jersey.core:jersey-core:$jeresy_version",
         jackson_databind: "com.fasterxml.jackson.core:jackson-databind:$jackson_version",
 
