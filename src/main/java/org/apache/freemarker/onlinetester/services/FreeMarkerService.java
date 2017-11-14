@@ -64,6 +64,7 @@ public class FreeMarkerService {
     private static final long THREAD_KEEP_ALIVE_TIME = 4 * 1000;
     private static final long ABORTION_LOOP_TIME_LIMIT = 5000;
     private static final long ABORTION_LOOP_INTERRUPTION_DISTANCE = 50;
+    private static final long THREAD_STOP_EFFECT_WAIT_TIME = 500;
     
     private static final String MAX_OUTPUT_LENGTH_EXCEEDED_TERMINATION = "\n----------\n"
             + "Aborted template processing, as the output length has exceeded the {0} character limit set for "
@@ -135,7 +136,8 @@ public class FreeMarkerService {
      *             If the calculation fails from a reason that's not a mistake in the template and doesn't fit the
      *             meaning of {@link RejectedExecutionException} either.
      */
-    public FreeMarkerServiceResponse calculateTemplateOutput(
+    @SuppressWarnings("deprecation") // for Thread.stop()
+	public FreeMarkerServiceResponse calculateTemplateOutput(
             String templateSourceCode, Object dataModel, OutputFormat outputFormat, Locale locale, TimeZone timeZone)
             throws RejectedExecutionException {
         Objects.requireNonNull(templateExecutor, "templateExecutor was null - was postConstruct ever called?");
@@ -172,10 +174,10 @@ public class FreeMarkerService {
                     if (templateExecutorThread == null) {
                         templateExecutionEnded = true;
                     } else {
+                        logger.debug("Trying to interrupt overly long template processing ({} ms left).", timeLeft);
                         FreeMarkerInternalsAccessor.interruptTemplateProcessing(templateExecutorThread);
-                        logger.debug("Trying to interrupt overly long template processing (" + timeLeft + " ms left).");
                     }
-                }
+                } // sync
                 if (!templateExecutionEnded) {
                     try {
                         timeLeft = ABORTION_LOOP_TIME_LIMIT - (System.currentTimeMillis() - abortionLoopStartTime);
@@ -189,18 +191,49 @@ public class FreeMarkerService {
                 }
             } while (!templateExecutionEnded && timeLeft > 0);
             
+    		// If a slow operation didn't react to Thread.interrupt, we better risk this than allow
+    		// the depletion of the thread pool:
+            if (!templateExecutionEnded) {
+	            synchronized (task) {
+	                Thread templateExecutorThread = task.getTemplateExecutorThread();
+	                if (templateExecutorThread == null) {
+	                    templateExecutionEnded = true;
+	                } else {
+	                    if (logger.isWarnEnabled()) {
+	                    	logger.warn("Calling Thread.stop() on unresponsive long template processing, which didn't "
+	                    			+ "respond to Template.interrupt() on time. Service state may will be inconsistent; "
+	                    			+ "JVM restart recommended!\n"
+	                    			+ "Template (quoted): \"" + StringEscapeUtils.escapeJava(templateSourceCode) + "\"");
+	                    }
+	                    templateExecutorThread.stop();
+	                }
+	            } // sync
+                try {
+                	// We should now receive a result from the task, so that we don't have to die with HTTP 500
+					Thread.sleep(THREAD_STOP_EFFECT_WAIT_TIME);
+		            synchronized (task) {
+		                Thread templateExecutorThread = task.getTemplateExecutorThread();
+		                if (templateExecutorThread == null) {
+		                    templateExecutionEnded = true;
+		                }
+		            } // sync
+				} catch (InterruptedException e1) {
+					// Just continue...
+				}
+            }
+            
             if (templateExecutionEnded) {
                 logger.debug("Long template processing has ended.");
                 try {
                     return future.get();
                 } catch (InterruptedException | ExecutionException e1) {
-                    throw new FreeMarkerServiceException("Failed to get result from template executor task", e);
+                    throw new FreeMarkerServiceException("Failed to get result from template executor task", e1);
                 }
             } else {
                 throw new FreeMarkerServiceException(
                         "Couldn't stop long running template processing within " + ABORTION_LOOP_TIME_LIMIT
                         + " ms. It's possibly stuck forever. Such problems can exhaust the executor pool. "
-                        + "Template (quoted): " + StringEscapeUtils.escapeJava(templateSourceCode));
+                        + "Template (quoted): \"" + StringEscapeUtils.escapeJava(templateSourceCode) + "\"");
             }
         }
     }
@@ -310,8 +343,9 @@ public class FreeMarkerService {
                 } catch (TemplateException e) {
                     // Expected (part of normal operation)
                     return createFailureResponse(e);
-                } catch (Exception e) {
-                    if (FreeMarkerInternalsAccessor.isTemplateProcessingInterruptedException(e)) {
+                } catch (Throwable e) {
+                    if (FreeMarkerInternalsAccessor.isTemplateProcessingInterruptedException(e)
+                    		|| e instanceof ThreadDeath /* due to Thread.stop() */) {
                         return new FreeMarkerServiceResponse.Builder().buildForFailure(new TimeoutException(
                                 "Template processing was aborted for exceeding the " + getMaxTemplateExecutionTime()
                                 + " ms time limit set for this online service. This is usually because you have "
