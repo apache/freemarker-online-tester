@@ -66,7 +66,11 @@ function execute() {
     })
     .fail(function (data) {
         if (data.responseJSON) {
-            showResult(data.responseJSON.errorCode + ": " + data.responseJSON.errorDescription, true);              
+        	if (typeof data.responseJSON.errorCode != 'undefined') {
+            	showResult(data.responseJSON.errorCode + ": " + data.responseJSON.errorDescription, true);
+        	} else {
+            	showResult("The service has responded with error (HTTP " + data.status + "; no details available)", true);
+        	}
         } else {
             showResult("The service was unavailable or had returned an invalid response.", true);              
         }

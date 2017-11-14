@@ -34,7 +34,7 @@
     <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/autosize.js/3.0.8/autosize.min.js"></script>
-    <script src="assets/js/script.js"></script>
+    <script src="assets/js/script.js?v=3"></script>
     <script>
         $(function() {
             // Auto-focus on first form input:
