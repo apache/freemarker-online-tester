@@ -69,7 +69,10 @@ function execute() {
         	if (typeof data.responseJSON.errorCode != 'undefined') {
             	showResult(data.responseJSON.errorCode + ": " + data.responseJSON.errorDescription, true);
         	} else {
-            	showResult("The service has responded with error (HTTP " + data.status + "; no details available)", true);
+            	showResult("The service has responded with error:\n"
+            			+ "HTTP " + data.status
+            			+ (data.responseJSON.message ? ":\n" + data.responseJSON.message : " (No more details available)"),
+            			true);
         	}
         } else {
             showResult("The service was unavailable or had returned an invalid response.", true);              

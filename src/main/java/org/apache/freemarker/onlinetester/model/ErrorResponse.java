@@ -27,4 +27,23 @@ public class ErrorResponse {
         this.errorCode = errorCode;
         this.errorDescription = errorDescription;
     }
+    
+    // Keep setters/getters to allow conversion to/from JSON!
+
+	public ErrorCode getErrorCode() {
+		return errorCode;
+	}
+
+	public void setErrorCode(ErrorCode errorCode) {
+		this.errorCode = errorCode;
+	}
+
+	public String getErrorDescription() {
+		return errorDescription;
+	}
+
+	public void setErrorDescription(String errorDescription) {
+		this.errorDescription = errorDescription;
+	}
+    
 }
