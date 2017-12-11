@@ -29,7 +29,7 @@
 <head>
     <meta charset="utf-8">
     <link rel="stylesheet" href="assets/css/main.css">
-    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.5.0/pure-min.css">
+    <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/pure-min.css">
     
     <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js"></script>
