@@ -50,6 +50,10 @@ buildscript {
     }
 }
 
+configurations {
+    rat
+}
+
 dependencies {
     compile libraries.dropwizard
     compile libraries.dropwizard_views
@@ -66,6 +70,8 @@ dependencies {
     testCompile libraries.mockito
     testCompile libraries.hamcrest
     testCompile libraries.jersey_grrizle
+    
+    rat libraries.rat
 }
 
 compileJava {
@@ -104,6 +110,26 @@ jacocoTestReport {
     reports {
         xml.enabled  true
     }
+}
+
+task rat {
+    doLast {
+        ant.taskdef(
+                name: 'ratReport', classname: 'org.apache.rat.anttasks.Report',
+                classpath: configurations.rat.asPath)
+        ant.ratReport(reportFile: "build/rat-report.txt") {
+            fileset(dir: "") {
+                exclude(name: "build/**")
+                exclude(name: "bin/**")
+                exclude(name: "out/**")
+                exclude(name: "ide-dependencies/**")
+                exclude(name: ".*")
+                exclude(name: ".*/**")
+            }
+        }
+    }
+    
+    project.logger.lifecycle('Rat reports will be written into build/rat-report.txt')
 }
 
 check.dependsOn jacocoTestReport

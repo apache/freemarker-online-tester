@@ -45,5 +45,8 @@ ext.libraries = [
         junit: "junit:junit-dep:4.11",
         mockito: "org.mockito:mockito-core:1.9.0",
         hamcrest: "org.hamcrest:hamcrest-library:1.3",
-        jersey_grrizle: "org.glassfish.jersey.test-framework.providers:jersey-test-framework-provider-grizzly2:$jeresy_version"
+        jersey_grrizle: "org.glassfish.jersey.test-framework.providers:jersey-test-framework-provider-grizzly2:$jeresy_version",
+        
+        // Build:
+        rat: "org.apache.rat:apache-rat-tasks:0.12"
 ]
