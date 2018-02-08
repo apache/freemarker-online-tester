@@ -118,17 +118,7 @@ task rat {
                 name: 'ratReport', classname: 'org.apache.rat.anttasks.Report',
                 classpath: configurations.rat.asPath)
         ant.ratReport(reportFile: "build/rat-report.txt") {
-            fileset(dir: "") {
-                exclude(name: "README.md")
-                exclude(name: "gradlew.bat")
-                exclude(name: "gradle/**")
-                exclude(name: "build/**")
-                exclude(name: "bin/**")
-                exclude(name: "out/**")
-                exclude(name: "ide-dependencies/**")
-                exclude(name: ".*")
-                exclude(name: ".*/**")
-            }
+            fileset(dir: "", excludesfile: "rat-excludes")
         }
     }
     
