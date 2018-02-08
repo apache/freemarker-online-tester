@@ -119,6 +119,9 @@ task rat {
                 classpath: configurations.rat.asPath)
         ant.ratReport(reportFile: "build/rat-report.txt") {
             fileset(dir: "") {
+                exclude(name: "README.md")
+                exclude(name: "gradlew.bat")
+                exclude(name: "gradle/**")
                 exclude(name: "build/**")
                 exclude(name: "bin/**")
                 exclude(name: "out/**")
