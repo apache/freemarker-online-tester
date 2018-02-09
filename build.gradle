@@ -120,9 +120,8 @@ task rat {
         ant.ratReport(reportFile: "build/rat-report.txt") {
             fileset(dir: "", excludesfile: "rat-excludes")
         }
+        project.logger.lifecycle('Rat reports were written into build/rat-report.txt')
     }
-    
-    project.logger.lifecycle('Rat reports will be written into build/rat-report.txt')
 }
 
 check.dependsOn jacocoTestReport
