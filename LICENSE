@@ -200,14 +200,3 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-
-   =========================================================================
-
-   The Apache FreeMarker Online Tester (incubating) source code contains the
-   following files, which were created at the Apache FreeMarker Online Tester
-   (incubating) project, and hence are covered by the same license as the
-   other source files of it:
-
-       src/main/resources/banner.txt
-
-   =========================================================================
