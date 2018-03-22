@@ -112,7 +112,7 @@ someXML = &lt;example x="1"&gt;text&lt;/example&gt;</pre></div>
                 <div class="formPanel">
                   <div class="horizontalBox">
                     <@u.htmlSelect caption="Output format" name="outputFormat" selectionOptions=outputFormats
-                        helpLink='http://freemarker.apache.org/docs/dgui_misc_autoescaping.html'
+                        helpLink='https://freemarker.apache.org/docs/dgui_misc_autoescaping.html'
                         helpHover='Influences auto-escaping' />
                   </div>
                   <div class="horizontalBox">
@@ -138,15 +138,15 @@ someXML = &lt;example x="1"&gt;text&lt;/example&gt;</pre></div>
         
         <div class="footer">
             FreeMarker documentation:
-            <a href="http://freemarker.org/docs/" target="_blank">Contents</a>
+            <a href="https://freemarker.apache.org/docs/" target="_blank">Contents</a>
             |
-            <a href="http://freemarker.org/docs/dgui_template_overallstructure.html" target="_blank">Overall&nbsp;syntax</a>
+            <a href="https://freemarker.apache.org/docs/dgui_template_overallstructure.html" target="_blank">Overall&nbsp;syntax</a>
             |
-            <a href="http://freemarker.org/docs/dgui_template_exp.html#exp_cheatsheet" target="_blank">Expression&nbsp;syntax</a>
+            <a href="https://freemarker.apache.org/docs/dgui_template_exp.html#exp_cheatsheet" target="_blank">Expression&nbsp;syntax</a>
             |
-            <a href="http://freemarker.org/docs/ref_directive_alphaidx.html" target="_blank">List&nbsp;of&nbsp;&lt;#<i>directives</i>&gt;</a>
+            <a href="https://freemarker.apache.org/docs/ref_directive_alphaidx.html" target="_blank">List&nbsp;of&nbsp;&lt;#<i>directives</i>&gt;</a>
             |
-            <a href="http://freemarker.org/docs/ref_builtins_alphaidx.html" target="_blank">List&nbsp;of&nbsp;<tt>?<i>built_in</i></tt> functions</a>
+            <a href="https://freemarker.apache.org/docs/ref_builtins_alphaidx.html" target="_blank">List&nbsp;of&nbsp;<tt>?<i>built_in</i></tt> functions</a>
         </div><!-- footer -->
     </div><!-- main -->
     
