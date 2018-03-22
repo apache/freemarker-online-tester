@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.TimeZone;
 import java.util.concurrent.RejectedExecutionException;
 
 import javax.ws.rs.Consumes;
@@ -38,18 +37,22 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.freemarker.onlinetester.model.ErrorCode;
 import org.apache.freemarker.onlinetester.model.ErrorResponse;
 import org.apache.freemarker.onlinetester.model.ExecuteRequest;
-import org.apache.freemarker.onlinetester.model.ExecuteResourceField;
-import org.apache.freemarker.onlinetester.model.ExecuteResourceProblem;
 import org.apache.freemarker.onlinetester.model.ExecuteResponse;
-import org.apache.freemarker.onlinetester.services.AllowedSettingValuesMaps;
+import org.apache.freemarker.onlinetester.model.ExecuteResponseProblem;
+import org.apache.freemarker.onlinetester.services.AllowedSettingValues;
 import org.apache.freemarker.onlinetester.services.FreeMarkerService;
+import org.apache.freemarker.onlinetester.services.FreeMarkerService.ExecuteTemplateArgs;
 import org.apache.freemarker.onlinetester.services.FreeMarkerServiceResponse;
 import org.apache.freemarker.onlinetester.util.DataModelParser;
 import org.apache.freemarker.onlinetester.util.DataModelParsingException;
 import org.apache.freemarker.onlinetester.util.ExceptionUtils;
 
-import freemarker.core.OutputFormat;
+import freemarker.template.Configuration;
+import freemarker.template.utility.StringUtil;
 
+/**
+ * AJAX API for executing the template submitted.
+ */
 @Path("/api/execute")
 public class ExecuteApiResource {
     private static final int MAX_TEMPLATE_INPUT_LENGTH = 10000;
@@ -62,17 +65,16 @@ public class ExecuteApiResource {
     private static final String MAX_DATA_MODEL_INPUT_LENGTH_EXCEEDED_ERROR_MESSAGE
             = "The data model length has exceeded the {0} character limit set for this service.";
 
-    private static final String UNKNOWN_OUTPUT_FORMAT_ERROR_MESSAGE = "Unknown output format: {0}";
-    private static final String UNKNOWN_LOCALE_ERROR_MESSAGE = "Unknown locale: {0}";
-    private static final String UNKNOWN_TIME_ZONE_ERROR_MESSAGE = "Unknown time zone: {0}";
-
-    private static final String SERVICE_OVERBURDEN_ERROR_MESSAGE
+    private static final String SERVICE_TIMEOUT_ERROR_MESSAGE
             = "Sorry, the service is overburden and couldn't handle your request now. Try again later.";
 
     static final String DATA_MODEL_ERROR_MESSAGE_HEADING = "Failed to parse data model:";
     static final String DATA_MODEL_ERROR_MESSAGE_FOOTER = "Note: This is NOT a FreeMarker error message. "
             + "The data model syntax is specific to this online service.";
 
+    public static final int DEFAULT_TAG_SYNTAX = Configuration.ANGLE_BRACKET_TAG_SYNTAX;
+    public static final int DEFAULT_INTERPLOATION_SYNTAX = Configuration.LEGACY_INTERPOLATION_SYNTAX;
+    
     private final FreeMarkerService freeMarkerService;
 
     public ExecuteApiResource(FreeMarkerService freeMarkerService) {
@@ -80,8 +82,8 @@ public class ExecuteApiResource {
     }
 
     @POST
-    @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public Response formResult(
             ExecuteRequest req) {
         ExecuteResponse resp = new ExecuteResponse();
@@ -90,118 +92,98 @@ public class ExecuteApiResource {
             return Response.status(400).entity("Empty Template & data").build();
         }
 
-        List<ExecuteResourceProblem> problems = new ArrayList<ExecuteResourceProblem>();
+        List<ExecuteResponseProblem> problems = new ArrayList<>();
         
-        String template = getTemplate(req, problems);
-        Map<String, Object> dataModel = getDataModel(req, problems);
-        OutputFormat outputFormat = getOutputFormat(req, problems);
-        Locale locale = getLocale(req, problems);
-        TimeZone timeZone = getTimeZone(req, problems);
+        ExecuteTemplateArgs serviceArgs = new ExecuteTemplateArgs()
+        		.templateSourceCode(lengthCheckAndGetTemplate(req, problems))
+        		.dataModel(parseDataModel(req, problems))
+        		.outputFormat(parseChoiceField(
+		        		ExecuteRequest.Field.OUTPUT_FORMAT, req.getOutputFormat(),
+		        		AllowedSettingValues.DEFAULT_OUTPUT_FORMAT, AllowedSettingValues.OUTPUT_FORMAT_MAP,
+		        		problems))
+        		.locale(parseChoiceField(
+		        		ExecuteRequest.Field.LOCALE, req.getLocale(),
+		        		AllowedSettingValues.DEFAULT_LOCALE, AllowedSettingValues.LOCALE_MAP,
+		        		problems))
+        		.timeZone(parseChoiceField(
+		        		ExecuteRequest.Field.TIME_ZONE, req.getTimeZone(),
+		        		AllowedSettingValues.DEFAULT_TIME_ZONE, AllowedSettingValues.TIME_ZONE_MAP,
+		        		problems))
+        		.tagSyntax(parseChoiceField(
+		        		ExecuteRequest.Field.TAG_SYNTAX, req.getTagSyntax(),
+		        		AllowedSettingValues.DEFAULT_TAG_SYNTAX, AllowedSettingValues.TAG_SYNTAX_MAP,
+		        		problems))
+        		.interpolationSyntax(parseChoiceField(
+		        		ExecuteRequest.Field.INTERPOLATION_SYNTAX, req.getInterpolationSyntax(),
+		        		AllowedSettingValues.DEFAULT_INTERPOLATION_SYNTAX, AllowedSettingValues.INTERPOLATION_SYNTAX_MAP,
+		        		problems));
         
         if (!problems.isEmpty()) {
             resp.setProblems(problems);
             return buildFreeMarkerResponse(resp);
         }
         
-        FreeMarkerServiceResponse freeMarkerServiceResponse;
+        FreeMarkerServiceResponse serviceResponse;
         try {
-            freeMarkerServiceResponse = freeMarkerService.calculateTemplateOutput(
-                    template, dataModel,
-                    outputFormat, locale, timeZone);
+            serviceResponse = freeMarkerService.executeTemplate(serviceArgs);
         } catch (RejectedExecutionException e) {
-            String error = SERVICE_OVERBURDEN_ERROR_MESSAGE;
+            String error = SERVICE_TIMEOUT_ERROR_MESSAGE;
             return Response.serverError().entity(new ErrorResponse(ErrorCode.FREEMARKER_SERVICE_TIMEOUT, error)).build();
         }
-        if (!freeMarkerServiceResponse.isSuccesful()){
-            Throwable failureReason = freeMarkerServiceResponse.getFailureReason();
+        if (!serviceResponse.isSuccesful()){
+            Throwable failureReason = serviceResponse.getFailureReason();
             String error = ExceptionUtils.getMessageWithCauses(failureReason);
-            problems.add(new ExecuteResourceProblem(ExecuteResourceField.TEMPLATE, error));
+            problems.add(new ExecuteResponseProblem(ExecuteRequest.Field.TEMPLATE, error));
             resp.setProblems(problems);
             return buildFreeMarkerResponse(resp);
         }
 
-        String result = freeMarkerServiceResponse.getTemplateOutput();
+        String result = serviceResponse.getTemplateOutput();
         resp.setResult(result);
-        resp.setTruncatedResult(freeMarkerServiceResponse.isTemplateOutputTruncated());
+        resp.setTruncatedResult(serviceResponse.isTemplateOutputTruncated());
         return buildFreeMarkerResponse(resp);
     }
 
-    private String getTemplate(ExecuteRequest req, List<ExecuteResourceProblem> problems) {
+    private String lengthCheckAndGetTemplate(ExecuteRequest req, List<ExecuteResponseProblem> problems) {
         String template = req.getTemplate();
-        
-        if (template.length() > MAX_TEMPLATE_INPUT_LENGTH) {
+        if (template != null && template.length() > MAX_TEMPLATE_INPUT_LENGTH) {
             String error = formatMessage(MAX_TEMPLATE_INPUT_LENGTH_EXCEEDED_ERROR_MESSAGE, MAX_TEMPLATE_INPUT_LENGTH);
-            problems.add(new ExecuteResourceProblem(ExecuteResourceField.TEMPLATE, error));
+            problems.add(new ExecuteResponseProblem(ExecuteRequest.Field.TEMPLATE, error));
             return null;
         }
-        
         return template;
     }
 
-    private Map<String, Object> getDataModel(ExecuteRequest req, List<ExecuteResourceProblem> problems) {
+    private Map<String, Object> parseDataModel(ExecuteRequest req, List<ExecuteResponseProblem> problems) {
         String dataModel = req.getDataModel();
 
         if (dataModel.length() > MAX_DATA_MODEL_INPUT_LENGTH) {
             String error = formatMessage(
                     MAX_DATA_MODEL_INPUT_LENGTH_EXCEEDED_ERROR_MESSAGE, MAX_DATA_MODEL_INPUT_LENGTH);
-            problems.add(new ExecuteResourceProblem(ExecuteResourceField.DATA_MODEL, error));
+            problems.add(new ExecuteResponseProblem(ExecuteRequest.Field.DATA_MODEL, error));
             return null;
         }
         
         try {
             return DataModelParser.parse(dataModel, freeMarkerService.getFreeMarkerTimeZone());
         } catch (DataModelParsingException e) {
-            problems.add(new ExecuteResourceProblem(ExecuteResourceField.DATA_MODEL, decorateResultText(e.getMessage())));
+            problems.add(new ExecuteResponseProblem(ExecuteRequest.Field.DATA_MODEL, decorateResultText(e.getMessage())));
             return null;
         }
     }
 
-    private OutputFormat getOutputFormat(ExecuteRequest req, List<ExecuteResourceProblem> problems) {
-        String outputFormatStr = req.getOutputFormat();
-        
-        if (StringUtils.isBlank(outputFormatStr)) {
-            return AllowedSettingValuesMaps.DEFAULT_OUTPUT_FORMAT;
-        }
-    
-        OutputFormat outputFormat = AllowedSettingValuesMaps.OUTPUT_FORMAT_MAP.get(outputFormatStr);
-        if (outputFormat == null) {
-            problems.add(new ExecuteResourceProblem(
-                    ExecuteResourceField.OUTPUT_FORMAT,
-                    formatMessage(UNKNOWN_OUTPUT_FORMAT_ERROR_MESSAGE, outputFormatStr)));
-        }
-        return outputFormat;
-    }
-
-    private Locale getLocale(ExecuteRequest req, List<ExecuteResourceProblem> problems) {
-        String localeStr = req.getLocale();
-        
-        if (StringUtils.isBlank(localeStr)) {
-            return AllowedSettingValuesMaps.DEFAULT_LOCALE;
+    private <T> T parseChoiceField(ExecuteRequest.Field name, String rawValue, T defaultValue,
+    		Map<String, ? extends T> rawToParsedMap, List<ExecuteResponseProblem> problems) {
+        if (StringUtils.isBlank(rawValue)) {
+            return defaultValue;
         }
         
-        Locale locale = AllowedSettingValuesMaps.LOCALE_MAP.get(localeStr);
-        if (locale == null) {
-            problems.add(new ExecuteResourceProblem(
-                    ExecuteResourceField.LOCALE,
-                    formatMessage(UNKNOWN_LOCALE_ERROR_MESSAGE, localeStr)));
+        T parsedValue = rawToParsedMap.get(rawValue);
+        if (parsedValue == null) {
+            problems.add(new ExecuteResponseProblem(name,
+            		formatMessage("Invalid value for \"{0}\": {1}", name, StringUtil.jQuote(rawValue))));
         }
-        return locale;
-    }
-
-    private TimeZone getTimeZone(ExecuteRequest req, List<ExecuteResourceProblem> problems) {
-        String timeZoneStr = req.getTimeZone();
-        
-        if (StringUtils.isBlank(timeZoneStr)) {
-            return AllowedSettingValuesMaps.DEFAULT_TIME_ZONE;
-        }
-        
-        TimeZone timeZone = AllowedSettingValuesMaps.TIME_ZONE_MAP.get(timeZoneStr);
-        if (timeZone == null) {
-            problems.add(new ExecuteResourceProblem(
-                    ExecuteResourceField.TIME_ZONE,
-                    formatMessage(UNKNOWN_TIME_ZONE_ERROR_MESSAGE, timeZoneStr)));
-        }
-        return timeZone;
+        return parsedValue;
     }
 
     private Response buildFreeMarkerResponse(ExecuteResponse executeResponse){

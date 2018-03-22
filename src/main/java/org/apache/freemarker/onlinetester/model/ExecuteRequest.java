@@ -18,6 +18,8 @@
  */
  package org.apache.freemarker.onlinetester.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 public class ExecuteRequest {
     private String template;
@@ -25,7 +27,45 @@ public class ExecuteRequest {
     private String outputFormat;
     private String locale;
     private String timeZone;
+    private String tagSyntax;
+    private String interpolationSyntax;
 
+    public static enum Field {
+        DATA_MODEL("dataModel"),
+        TEMPLATE("template"),
+        OUTPUT_FORMAT("outputFormat"),
+        LOCALE("locale"),
+        TIME_ZONE("timeZone"),
+    	TAG_SYNTAX("tagSyntax"),
+    	INTERPOLATION_SYNTAX("interpolationSyntax");
+        
+        private final String fieldName;
+        
+        private Field(String filedName) {
+            this.fieldName = filedName;
+        }
+        
+        public String toString() {
+            return getFieldName();
+        }
+        
+        @JsonValue
+        public String getFieldName() {
+            return fieldName;
+        }
+
+        @JsonCreator
+        public static Field fromEnumString(String val) {
+            for(Field field : values()) {
+                if(field.getFieldName().equals(val)) {
+                    return field;
+                }
+            }
+            throw new IllegalArgumentException("Invalid string value passed: " + val);
+        }
+        
+    }
+    
     public ExecuteRequest() {
     }
 
@@ -74,5 +114,21 @@ public class ExecuteRequest {
     public void setTimeZone(String timeZone) {
         this.timeZone = timeZone;
     }
+
+	public String getTagSyntax() {
+		return tagSyntax;
+	}
+
+	public void setTagSyntax(String tagSyntax) {
+		this.tagSyntax = tagSyntax;
+	}
+
+	public String getInterpolationSyntax() {
+		return interpolationSyntax;
+	}
+
+	public void setInterpolationSyntax(String interpolationSyntax) {
+		this.interpolationSyntax = interpolationSyntax;
+	}
     
 }

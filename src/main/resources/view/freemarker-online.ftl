@@ -34,7 +34,7 @@
     <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/autosize.js/3.0.8/autosize.min.js"></script>
-    <script src="assets/js/script.js?v=3"></script>
+    <script src="assets/js/script.js?v=4"></script><!-- Always increase v if the script.js is changed! -->
     <script>
         $(function() {
             // Auto-focus on first form input:
@@ -122,6 +122,16 @@ someXML = &lt;example x="1"&gt;text&lt;/example&gt;</pre></div>
                   <div class="horizontalBox">
                     <@u.htmlSelect caption="Time zone" name="timeZone" selectionOptions=timeZones
                     	helpHover='Date/time values are shown as seen from this time zone' />
+                  </div>
+                </div>
+                <div class="formPanel">
+                  <div class="horizontalBox">
+                    <@u.htmlSelect caption="Tag syntax" name="tagSyntax" selectionOptions=tagSyntaxes
+                        helpLink='https://freemarker.apache.org/docs/dgui_misc_alternativesyntax.html#dgui_misc_alternativesyntax_tag' />
+                  </div>
+                  <div class="horizontalBox">
+                    <@u.htmlSelect caption="Interpolation syntax" name="interpolationSyntax" selectionOptions=interpolationSyntaxes
+                        helpLink='https://freemarker.apache.org/docs/dgui_misc_alternativesyntax.html#dgui_misc_alternativesyntax_interpolation'  />
                   </div>
                 </div>
                 <div class="formBottomButtonsContainer">

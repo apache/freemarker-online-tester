@@ -32,6 +32,8 @@ import java.util.TimeZone;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import com.google.common.collect.ImmutableMap;
+
 import freemarker.core.HTMLOutputFormat;
 import freemarker.core.OutputFormat;
 import freemarker.core.PlainTextOutputFormat;
@@ -39,32 +41,26 @@ import freemarker.core.RTFOutputFormat;
 import freemarker.core.UndefinedOutputFormat;
 import freemarker.core.XHTMLOutputFormat;
 import freemarker.core.XMLOutputFormat;
+import freemarker.template.Configuration;
 
 /**
- * Maps of the setting values the caller can chose from (these are the value shown in a dropdown on the UI).
+ * Maps of the FreeMarker configuration setting values the remote caller can
+ * chose from (these are the value shown in a dropdown on the UI). This is
+ * possibly more restricted than what FreeMarker supports, for security reasons.
  */
-public class AllowedSettingValuesMaps {
+public class AllowedSettingValues {
 
     public static final OutputFormat DEFAULT_OUTPUT_FORMAT = UndefinedOutputFormat.INSTANCE;
     public static final String DEFAULT_OUTPUT_FORMAT_KEY = DEFAULT_OUTPUT_FORMAT.getName();
-    public static final Map<String, OutputFormat> OUTPUT_FORMAT_MAP;
-    static {
-        Map<String, OutputFormat> map = new HashMap<String, OutputFormat>();
-        
-        addOutputFormatToMap(map, UndefinedOutputFormat.INSTANCE);
-        addOutputFormatToMap(map, HTMLOutputFormat.INSTANCE);
-        addOutputFormatToMap(map, XMLOutputFormat.INSTANCE);
-        addOutputFormatToMap(map, XHTMLOutputFormat.INSTANCE);
-        addOutputFormatToMap(map, RTFOutputFormat.INSTANCE);
-        addOutputFormatToMap(map, PlainTextOutputFormat.INSTANCE);
-        
-        OUTPUT_FORMAT_MAP = Collections.unmodifiableMap(map);
-    }
+    public static final Map<String, OutputFormat> OUTPUT_FORMAT_MAP = ImmutableMap.<String, OutputFormat>builder()
+    		.put(UndefinedOutputFormat.INSTANCE.getName(), UndefinedOutputFormat.INSTANCE)
+    		.put(HTMLOutputFormat.INSTANCE.getName(), HTMLOutputFormat.INSTANCE)
+    		.put(XMLOutputFormat.INSTANCE.getName(), XMLOutputFormat.INSTANCE)
+    		.put(XHTMLOutputFormat.INSTANCE.getName(), XHTMLOutputFormat.INSTANCE)
+    		.put(RTFOutputFormat.INSTANCE.getName(), RTFOutputFormat.INSTANCE)
+    		.put(PlainTextOutputFormat.INSTANCE.getName(), PlainTextOutputFormat.INSTANCE)
+    		.build();
     
-    private static void addOutputFormatToMap(Map<String, OutputFormat> map, OutputFormat outputFormat) {
-        map.put(outputFormat.getName(), outputFormat);
-    }
-
     public static final Locale DEFAULT_LOCALE = Locale.US;
     public static final String DEFAULT_LOCALE_KEY = DEFAULT_LOCALE.toString();
     public static final Map<String, Locale> LOCALE_MAP;
@@ -92,14 +88,12 @@ public class AllowedSettingValuesMaps {
     }
 
     public static final TimeZone DEFAULT_TIME_ZONE = TimeZone.getTimeZone("America/Los_Angeles");
-    
     public static final String DEFAULT_TIME_ZONE_KEY;
-    
     public static final Map<String, TimeZone> TIME_ZONE_MAP;
     static {
         String[] availableIDs = TimeZone.getAvailableIDs();
         
-        DEFAULT_TIME_ZONE_KEY = AllowedSettingValuesMaps.DEFAULT_TIME_ZONE.getID();
+        DEFAULT_TIME_ZONE_KEY = AllowedSettingValues.DEFAULT_TIME_ZONE.getID();
         if (!ArrayUtils.contains(availableIDs, DEFAULT_TIME_ZONE_KEY)) {
             ArrayUtils.add(availableIDs, DEFAULT_TIME_ZONE_KEY);
         }
@@ -112,4 +106,18 @@ public class AllowedSettingValuesMaps {
         TIME_ZONE_MAP = Collections.unmodifiableMap(map);
     }
 
+    public static final String DEFAULT_TAG_SYNTAX_KEY = "angleBracket";
+    public static final Map<String, Integer> TAG_SYNTAX_MAP = ImmutableMap.of(
+    		"angleBracket", Configuration.ANGLE_BRACKET_TAG_SYNTAX,
+    		"squareBracket", Configuration.SQUARE_BRACKET_TAG_SYNTAX,
+    		"autoDetect", Configuration.AUTO_DETECT_TAG_SYNTAX);
+    public static final int DEFAULT_TAG_SYNTAX = TAG_SYNTAX_MAP.get(DEFAULT_TAG_SYNTAX_KEY);
+    
+    public static final String DEFAULT_INTERPOLATION_SYNTAX_KEY = "legacy";
+    public static final Map<String, Integer> INTERPOLATION_SYNTAX_MAP = ImmutableMap.of(
+    		"legacy", Configuration.LEGACY_INTERPOLATION_SYNTAX,
+    		"dollar", Configuration.DOLLAR_INTERPOLATION_SYNTAX,
+    		"squareBracket", Configuration.SQUARE_BRACKET_INTERPOLATION_SYNTAX);
+    public static final int DEFAULT_INTERPOLATION_SYNTAX = Configuration.LEGACY_INTERPOLATION_SYNTAX;
+    
 }

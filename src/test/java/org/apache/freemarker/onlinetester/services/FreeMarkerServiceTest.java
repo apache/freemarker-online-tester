@@ -36,6 +36,7 @@ import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.apache.freemarker.onlinetester.services.FreeMarkerService.ExecuteTemplateArgs;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -44,6 +45,7 @@ import org.slf4j.LoggerFactory;
 import freemarker.core.Environment;
 import freemarker.core.HTMLOutputFormat;
 import freemarker.core.ParseException;
+import freemarker.template.Configuration;
 import freemarker.template.TemplateDirectiveBody;
 import freemarker.template.TemplateDirectiveModel;
 import freemarker.template.TemplateException;
@@ -77,8 +79,8 @@ public class FreeMarkerServiceTest {
 
     @Test
     public void testCalculationOfATemplateWithNoDataModel() {
-        FreeMarkerServiceResponse serviceResponse = getService().calculateTemplateOutput(
-                "test", Collections.<String, Object>emptyMap(), null, null, null);
+        FreeMarkerServiceResponse serviceResponse = getService().executeTemplate(new ExecuteTemplateArgs()
+        		.templateSourceCode("test").dataModel(Collections.emptyMap()));
         assertThat(serviceResponse.isSuccesful(), is(true));
         assertThat(serviceResponse.getTemplateOutput(), is("test"));
     }
@@ -88,8 +90,8 @@ public class FreeMarkerServiceTest {
         HashMap<String, Object> dataModel = new HashMap<>();
         dataModel.put("var1", "val1");
         String templateSourceCode = "${var1}";
-        FreeMarkerServiceResponse serviceResponse = getService().calculateTemplateOutput(
-                templateSourceCode, dataModel, null, null, null);
+        FreeMarkerServiceResponse serviceResponse = getService().executeTemplate(new ExecuteTemplateArgs()
+        		.templateSourceCode(templateSourceCode).dataModel(dataModel));
         assertThat(serviceResponse.getTemplateOutput(), equalTo("val1"));
     }
 
@@ -99,8 +101,8 @@ public class FreeMarkerServiceTest {
         dataModel.put("var1", "val1");
         dataModel.put("var2", "val2");
         String template = "${var1?capitalize} ${var2?cap_first}";
-        FreeMarkerServiceResponse serviceResponse = getService().calculateTemplateOutput(
-                template, dataModel, null, null, null);
+        FreeMarkerServiceResponse serviceResponse = getService().executeTemplate(new ExecuteTemplateArgs()
+        		.templateSourceCode(template).dataModel(dataModel));
         assertThat(serviceResponse.getTemplateOutput(), equalTo("Val1 Val2"));
     }
 
@@ -108,13 +110,13 @@ public class FreeMarkerServiceTest {
     public void testOutputFormatParamterMatters() {
         String template = "${'&'}";
         {
-            FreeMarkerServiceResponse serviceResponse = getService().calculateTemplateOutput(
-                    template, null, null, null, null);
+            FreeMarkerServiceResponse serviceResponse = getService().executeTemplate(new ExecuteTemplateArgs()
+            		.templateSourceCode(template));
             assertThat(serviceResponse.getTemplateOutput(), equalTo("&"));
         }
         {
-            FreeMarkerServiceResponse serviceResponse = getService().calculateTemplateOutput(
-                    template, null, HTMLOutputFormat.INSTANCE, null, null);
+            FreeMarkerServiceResponse serviceResponse = getService().executeTemplate(new ExecuteTemplateArgs()
+            		.templateSourceCode(template).outputFormat(HTMLOutputFormat.INSTANCE));
             assertThat(serviceResponse.getTemplateOutput(), equalTo("&amp;"));
         }
     }
@@ -123,13 +125,13 @@ public class FreeMarkerServiceTest {
     public void testLocaleParameterMatters() {
         String template = "${.locale}";
         {
-            FreeMarkerServiceResponse serviceResponse = getService().calculateTemplateOutput(
-                    template, null, null, new Locale("en", "US"), null);
+            FreeMarkerServiceResponse serviceResponse = getService().executeTemplate(new ExecuteTemplateArgs()
+            		.templateSourceCode(template).locale(Locale.US));
             assertThat(serviceResponse.getTemplateOutput(), equalTo("en_US"));
         }
         {
-            FreeMarkerServiceResponse serviceResponse = getService().calculateTemplateOutput(
-                    template, null, null, new Locale("ru", "RU"), null);
+            FreeMarkerServiceResponse serviceResponse = getService().executeTemplate(new ExecuteTemplateArgs()
+            		.templateSourceCode(template).locale(new Locale("ru", "RU")));
             assertThat(serviceResponse.getTemplateOutput(), equalTo("ru_RU"));
         }
     }
@@ -140,33 +142,68 @@ public class FreeMarkerServiceTest {
         
         String gmt1Result;
         {
-            FreeMarkerServiceResponse serviceResponse = getService().calculateTemplateOutput(
-                    template, null, null, null, TimeZone.getTimeZone("GMT+01"));
+            FreeMarkerServiceResponse serviceResponse = getService().executeTemplate(new ExecuteTemplateArgs()
+            		.templateSourceCode(template).timeZone(TimeZone.getTimeZone("GMT+01")));
             gmt1Result = serviceResponse.getTemplateOutput();
         }
         
         String gmt2Result;
         {
-            FreeMarkerServiceResponse serviceResponse = getService().calculateTemplateOutput(
-                    template, null, null, new Locale("ru", "RU"), null);
+            FreeMarkerServiceResponse serviceResponse = getService().executeTemplate(new ExecuteTemplateArgs()
+            		.templateSourceCode(template).locale(new Locale("ru", "RU")));
             gmt2Result = serviceResponse.getTemplateOutput();
         }
         
         assertThat(gmt1Result, not(equalTo(gmt2Result)));
     }
+
+    @Test
+    public void testTagSyntaxParameterMatters() {
+        String template = "[#if true]1[/#if]<#if true>2</#if>";
+        {
+            FreeMarkerServiceResponse serviceResponse = getService().executeTemplate(new ExecuteTemplateArgs()
+            		.templateSourceCode(template).tagSyntax(Configuration.ANGLE_BRACKET_TAG_SYNTAX));
+            assertThat(serviceResponse.getTemplateOutput(), equalTo("[#if true]1[/#if]2"));
+        }
+        for (int tagSyntax : new int[] { Configuration.SQUARE_BRACKET_TAG_SYNTAX, Configuration.AUTO_DETECT_TAG_SYNTAX }) {
+            FreeMarkerServiceResponse serviceResponse = getService().executeTemplate(new ExecuteTemplateArgs()
+            		.templateSourceCode(template).tagSyntax(tagSyntax));
+            assertThat(serviceResponse.getTemplateOutput(), equalTo("1<#if true>2</#if>"));
+        }
+    }
+
+    @Test
+    public void testInterpolationSyntaxParameterMatters() {
+        String template = "${1} #{2} [=3]";
+        {
+            FreeMarkerServiceResponse serviceResponse = getService().executeTemplate(new ExecuteTemplateArgs()
+            		.templateSourceCode(template).interpolationSyntax(Configuration.LEGACY_INTERPOLATION_SYNTAX));
+            assertThat(serviceResponse.getTemplateOutput(), equalTo("1 2 [=3]"));
+        }
+        {
+            FreeMarkerServiceResponse serviceResponse = getService().executeTemplate(new ExecuteTemplateArgs()
+            		.templateSourceCode(template).interpolationSyntax(Configuration.DOLLAR_INTERPOLATION_SYNTAX));
+            assertThat(serviceResponse.getTemplateOutput(), equalTo("1 #{2} [=3]"));
+        }
+        {
+            FreeMarkerServiceResponse serviceResponse = getService().executeTemplate(new ExecuteTemplateArgs()
+            		.templateSourceCode(template).interpolationSyntax(Configuration.SQUARE_BRACKET_INTERPOLATION_SYNTAX));
+            assertThat(serviceResponse.getTemplateOutput(), equalTo("${1} #{2} 3"));
+        }
+    }
     
     @Test
     public void testTemplateWithSyntaxError() {
-        FreeMarkerServiceResponse serviceResponse = getService().calculateTemplateOutput(
-                "test ${xx", Collections.<String, Object>emptyMap(), null, null, null);
+        FreeMarkerServiceResponse serviceResponse = getService().executeTemplate(new ExecuteTemplateArgs()
+        		.templateSourceCode("test ${xx").dataModel(Collections.emptyMap()));
         assertThat(serviceResponse.isSuccesful(), is(false));
         assertThat(serviceResponse.getFailureReason(), instanceOf(ParseException.class));
     }
 
     @Test
     public void testTemplateWithEvaluationError() {
-        FreeMarkerServiceResponse serviceResponse = getService().calculateTemplateOutput(
-                "test ${x}", Collections.<String, Object>emptyMap(), null, null, null);
+        FreeMarkerServiceResponse serviceResponse = getService().executeTemplate(new ExecuteTemplateArgs()
+        		.templateSourceCode("test ${x}").dataModel(Collections.emptyMap()));
         assertThat(serviceResponse.isSuccesful(), is(false));
         assertThat(serviceResponse.getFailureReason(), instanceOf(TemplateException.class));
     }
@@ -174,8 +211,8 @@ public class FreeMarkerServiceTest {
     @Test
     public void testResultAlmostTruncation() {
         serviceBuilder.setMaxOutputLength(5);
-        FreeMarkerServiceResponse serviceResponse = getService().calculateTemplateOutput(
-                TRUNCATION_TEST_TEMPLATE, Collections.<String, Object>emptyMap(), null, null, null);
+        FreeMarkerServiceResponse serviceResponse = getService().executeTemplate(new ExecuteTemplateArgs()
+        		.templateSourceCode(TRUNCATION_TEST_TEMPLATE).dataModel(Collections.emptyMap()));
         assertThat(serviceResponse.isSuccesful(), is(true));
         assertThat(serviceResponse.isTemplateOutputTruncated(), is(false));
         assertThat(serviceResponse.getTemplateOutput(), equalTo(TRUNCATION_TEST_TEMPLATE));
@@ -185,8 +222,8 @@ public class FreeMarkerServiceTest {
     public void testResultTruncation() {
         serviceBuilder.setMaxOutputLength(4);
         FreeMarkerService service = getService();
-        FreeMarkerServiceResponse serviceResponse = service.calculateTemplateOutput(
-                TRUNCATION_TEST_TEMPLATE, Collections.<String, Object>emptyMap(), null, null, null);
+        FreeMarkerServiceResponse serviceResponse = service.executeTemplate(new ExecuteTemplateArgs()
+        		.templateSourceCode(TRUNCATION_TEST_TEMPLATE).dataModel(Collections.emptyMap()));
         assertThat(serviceResponse.isSuccesful(), is(true));
         assertThat(serviceResponse.isTemplateOutputTruncated(), is(true));
         assertThat(serviceResponse.getTemplateOutput(),
@@ -205,8 +242,9 @@ public class FreeMarkerServiceTest {
         
                     @Override
                     public FreeMarkerServiceResponse call() throws Exception {
-                        return getService().calculateTemplateOutput(
-                                "<#list 1.. as _></#list>", Collections.<String, Object>emptyMap(), null, null, null);
+                        return getService().executeTemplate(new ExecuteTemplateArgs()
+                        		.templateSourceCode("<#list 1.. as _></#list>")
+                        		.dataModel(Collections.emptyMap()));
                     }
                     
                 });
@@ -231,7 +269,8 @@ public class FreeMarkerServiceTest {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        service.calculateTemplateOutput("<@blocker/>", blockerDataModel, null, null, null);
+                        service.executeTemplate(new ExecuteTemplateArgs()
+                        		.templateSourceCode("<@blocker/>").dataModel(blockerDataModel));
                     }
                 }).start();
             }
@@ -253,7 +292,8 @@ public class FreeMarkerServiceTest {
             
             // Shouldn't accept on more tasks:
             try {
-                service.calculateTemplateOutput("<@blocker/>", blockerDataModel, null, null, null);
+                service.executeTemplate(new ExecuteTemplateArgs()
+                		.templateSourceCode("<@blocker/>").dataModel(blockerDataModel));
                 fail("Expected RejectedExecutionException, but nothing was thrown.");
             } catch (RejectedExecutionException e) {
                 // Expected

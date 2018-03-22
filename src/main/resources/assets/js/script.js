@@ -17,6 +17,8 @@
  * under the License.
  */
 
+// IMPORTANT! If you modify this file, increase the number after "?v=" in the FreeMarker template!
+
 $(document).ready(function() {
     $("#eval-btn").click(function() {
         execute();
@@ -42,7 +44,9 @@ function execute() {
         "dataModel": $("#dataModel").val(),
         "outputFormat": $("#outputFormat").val(),
         "locale": $("#locale").val(),
-        "timeZone": $("#timeZone").val()
+        "timeZone": $("#timeZone").val(),
+        "tagSyntax": $("#tagSyntax").val(),
+        "interpolationSyntax": $("#interpolationSyntax").val(),
     }
 
     $.ajax({
@@ -102,3 +106,5 @@ function showResult(result, isError) {
     $(".resultContainer").show();
     autosize.update($("#result"));
 }
+
+//IMPORTANT! If you modify this file, increase the number after "?v=" in the FreeMarker template!

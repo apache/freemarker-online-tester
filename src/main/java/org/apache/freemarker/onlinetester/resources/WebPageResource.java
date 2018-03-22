@@ -49,7 +49,9 @@ public class WebPageResource {
             @FormParam("dataModel") String dataModel,
             @FormParam("outputFormat") String outputFormat,
             @FormParam("locale") String locale,
-            @FormParam("timeZone") String timeZone) {
+            @FormParam("timeZone") String timeZone,
+            @FormParam("tagSyntax") String tagSyntax,
+            @FormParam("interpolationSyntax") String interpolationSyntax) {
         FreeMarkerOnlineView view = new FreeMarkerOnlineView();
         view.setTemplate(template);
         view.setDataModel(dataModel);

@@ -52,6 +52,7 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
+import freemarker.template.utility.StringUtil;
 
 public class FreeMarkerService {
 
@@ -108,23 +109,13 @@ public class FreeMarkerService {
 				// Suppress it
 			}
         });
-        freeMarkerConfig.setLocale(AllowedSettingValuesMaps.DEFAULT_LOCALE);
-        freeMarkerConfig.setTimeZone(AllowedSettingValuesMaps.DEFAULT_TIME_ZONE);
-        freeMarkerConfig.setOutputFormat(AllowedSettingValuesMaps.DEFAULT_OUTPUT_FORMAT);
+        freeMarkerConfig.setLocale(AllowedSettingValues.DEFAULT_LOCALE);
+        freeMarkerConfig.setTimeZone(AllowedSettingValues.DEFAULT_TIME_ZONE);
+        freeMarkerConfig.setOutputFormat(AllowedSettingValues.DEFAULT_OUTPUT_FORMAT);
         freeMarkerConfig.setOutputEncoding("UTF-8");
     }
     
     /**
-     * @param templateSourceCode
-     *            The FTL to execute; not {@code null}.
-     * @param dataModel
-     *            The FreeMarker data-model to execute the template with; maybe {@code null}.
-     * @param outputFormat
-     *            The output format to execute the template with; maybe {@code null}.
-     * @param locale
-     *            The locale to execute the template with; maybe {@code null}.
-     * @param timeZone
-     *            The time zone to execute the template with; maybe {@code null}.
      * 
      * @return The result of the template parsing and evaluation. The method won't throw exception if that fails due to
      *         errors in the template provided, instead it indicates this fact in the response object. That's because
@@ -137,13 +128,11 @@ public class FreeMarkerService {
      *             meaning of {@link RejectedExecutionException} either.
      */
     @SuppressWarnings("deprecation") // for Thread.stop()
-	public FreeMarkerServiceResponse calculateTemplateOutput(
-            String templateSourceCode, Object dataModel, OutputFormat outputFormat, Locale locale, TimeZone timeZone)
+	public FreeMarkerServiceResponse executeTemplate(ExecuteTemplateArgs args)
             throws RejectedExecutionException {
         Objects.requireNonNull(templateExecutor, "templateExecutor was null - was postConstruct ever called?");
         
-        final CalculateTemplateOutput task = new CalculateTemplateOutput(
-                templateSourceCode, dataModel, outputFormat, locale, timeZone);
+        final ExecuteTempalteTask task = new ExecuteTempalteTask(args);
         Future<FreeMarkerServiceResponse> future = templateExecutor.submit(task);
         
         synchronized (task) {
@@ -203,7 +192,7 @@ public class FreeMarkerService {
 	                    	logger.warn("Calling Thread.stop() on unresponsive long template processing, which didn't "
 	                    			+ "respond to Template.interrupt() on time. Service state may will be inconsistent; "
 	                    			+ "JVM restart recommended!\n"
-	                    			+ "Template (quoted): \"" + StringEscapeUtils.escapeJava(templateSourceCode) + "\"");
+	                    			+ "Template (quoted): \"" + StringEscapeUtils.escapeJava(args.templateSourceCode) + "\"");
 	                    }
 	                    templateExecutorThread.stop();
 	                }
@@ -217,7 +206,7 @@ public class FreeMarkerService {
 		                    templateExecutionEnded = true;
 		                }
 		            } // sync
-				} catch (InterruptedException e1) {
+				} catch (InterruptedException e2) {
 					// Just continue...
 				}
             }
@@ -226,14 +215,14 @@ public class FreeMarkerService {
                 logger.debug("Long template processing has ended.");
                 try {
                     return future.get();
-                } catch (InterruptedException | ExecutionException e1) {
-                    throw new FreeMarkerServiceException("Failed to get result from template executor task", e1);
+                } catch (InterruptedException | ExecutionException e2) {
+                    throw new FreeMarkerServiceException("Failed to get result from template executor task", e2);
                 }
             } else {
                 throw new FreeMarkerServiceException(
                         "Couldn't stop long running template processing within " + ABORTION_LOOP_TIME_LIMIT
                         + " ms. It's possibly stuck forever. Such problems can exhaust the executor pool. "
-                        + "Template (quoted): \"" + StringEscapeUtils.escapeJava(templateSourceCode) + "\"");
+                        + "Template (quoted): " + StringUtil.jQuote(args.templateSourceCode));
             }
         }
     }
@@ -265,25 +254,65 @@ public class FreeMarkerService {
         logger.debug("The template had error(s)", e);
         return new FreeMarkerServiceResponse.Builder().buildForFailure(e);
     }
+    
+    /**
+     * Argument to {@link FreeMarkerService#executeTemplate(ExecuteTemplateArgs)}; fluent API to deal with many parameters,
+     * most of which is optional. Only {@code templateSourceCode} must be set to non-{@code null}.
+     */
+	public static class ExecuteTemplateArgs {
+		private String templateSourceCode;
+		private Object dataModel;
+		private OutputFormat outputFormat;
+		private Locale locale;
+		private TimeZone timeZone;
+		private Integer tagSyntax;
+		private Integer interpolationSyntax;
 
-    private class CalculateTemplateOutput implements Callable<FreeMarkerServiceResponse> {
+		public ExecuteTemplateArgs templateSourceCode(String templateSourceCode) {
+			this.templateSourceCode = templateSourceCode;
+			return this;
+		}
+
+		public ExecuteTemplateArgs dataModel(Object dataModel) {
+			this.dataModel = dataModel;
+			return this;
+		}
+
+		public ExecuteTemplateArgs outputFormat(OutputFormat outputFormat) {
+			this.outputFormat = outputFormat;
+			return this;
+		}
+
+		public ExecuteTemplateArgs locale(Locale locale) {
+			this.locale = locale;
+			return this;
+		}
+
+		public ExecuteTemplateArgs timeZone(TimeZone timeZone) {
+			this.timeZone = timeZone;
+			return this;
+		}
+
+		public ExecuteTemplateArgs tagSyntax(Integer tagSyntax) {
+			this.tagSyntax = tagSyntax;
+			return this;
+		}
+
+		public ExecuteTemplateArgs interpolationSyntax(Integer interpolationSyntax) {
+			this.interpolationSyntax = interpolationSyntax;
+			return this;
+		}
+	}
+
+    private class ExecuteTempalteTask implements Callable<FreeMarkerServiceResponse> {
         
+    	private final ExecuteTemplateArgs args;
         private boolean templateExecutionStarted;
         private Thread templateExecutorThread;
-        private final String templateSourceCode;
-        private final Object dataModel;
-        private final OutputFormat outputFormat;
-        private final Locale locale;
-        private final TimeZone timeZone;
         private boolean taskEnded;
 
-        private CalculateTemplateOutput(String templateSourceCode, Object dataModel,
-                OutputFormat outputFormat, Locale locale, TimeZone timeZone) {
-            this.templateSourceCode = templateSourceCode;
-            this.dataModel = dataModel;
-            this.outputFormat = outputFormat;
-            this.locale = locale;
-            this.timeZone = timeZone;
+        private ExecuteTempalteTask(ExecuteTemplateArgs args) {
+            this.args = args;
         }
         
         @Override
@@ -293,19 +322,25 @@ public class FreeMarkerService {
                 try {
                     TemplateConfiguration tCfg = new TemplateConfiguration();
                     tCfg.setParentConfiguration(freeMarkerConfig);
-                    if (outputFormat != null) {
-                        tCfg.setOutputFormat(outputFormat);
+                    
+                    if (args.outputFormat != null) {
+                        tCfg.setOutputFormat(args.outputFormat);
                     }
-                    if (locale != null) {
-                        tCfg.setLocale(locale);
+                    if (args.locale != null) {
+                        tCfg.setLocale(args.locale);
                     }
-                    if (timeZone != null) {
-                        tCfg.setTimeZone(timeZone);
+                    if (args.timeZone != null) {
+                        tCfg.setTimeZone(args.timeZone);
+                    }
+                    if (args.tagSyntax != null) {
+                    	tCfg.setTagSyntax(args.tagSyntax);
+                    }
+                    if (args.interpolationSyntax != null) {
+                    	tCfg.setInterpolationSyntax(args.interpolationSyntax);
                     }
                     
                     template = new Template(null, null,
-                            new StringReader(templateSourceCode), freeMarkerConfig, tCfg, null);
-                    
+                            new StringReader(args.templateSourceCode), freeMarkerConfig, tCfg, null);
                     tCfg.apply(template);
                 } catch (ParseException e) {
                     // Expected (part of normal operation)
@@ -326,7 +361,7 @@ public class FreeMarkerService {
                         notifyAll();
                     }
                     try {
-                        template.process(dataModel, new LengthLimitedWriter(writer, maxOutputLength));
+                        template.process(args.dataModel, new LengthLimitedWriter(writer, maxOutputLength));
                     } finally {
                         synchronized (this) {
                             templateExecutorThread = null;
@@ -337,7 +372,7 @@ public class FreeMarkerService {
                 } catch (LengthLimitExceededException e) {
                     // Not really an error, we just cut the output here.
                     resultTruncated = true;
-                    writer.write(new MessageFormat(MAX_OUTPUT_LENGTH_EXCEEDED_TERMINATION, AllowedSettingValuesMaps.DEFAULT_LOCALE)
+                    writer.write(new MessageFormat(MAX_OUTPUT_LENGTH_EXCEEDED_TERMINATION, AllowedSettingValues.DEFAULT_LOCALE)
                             .format(new Object[] { maxOutputLength }));
                     // Falls through
                 } catch (TemplateException e) {

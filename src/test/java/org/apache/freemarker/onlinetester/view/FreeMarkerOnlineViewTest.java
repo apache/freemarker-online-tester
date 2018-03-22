@@ -26,7 +26,7 @@ import java.util.TimeZone;
 
 import org.junit.Test;
 
-import org.apache.freemarker.onlinetester.services.AllowedSettingValuesMaps;
+import org.apache.freemarker.onlinetester.services.AllowedSettingValues;
 
 import freemarker.core.HTMLOutputFormat;
 
@@ -41,9 +41,9 @@ public class FreeMarkerOnlineViewTest {
         FreeMarkerOnlineView view = new FreeMarkerOnlineView();
         assertEquals(view.getTemplate(), "");
         assertEquals(view.getDataModel(), "");
-        assertEquals(view.getOutputFormat(), AllowedSettingValuesMaps.DEFAULT_OUTPUT_FORMAT_KEY);
-        assertEquals(view.getLocale(), AllowedSettingValuesMaps.DEFAULT_LOCALE_KEY);
-        assertEquals(view.getTimeZone(), AllowedSettingValuesMaps.DEFAULT_TIME_ZONE_KEY);
+        assertEquals(view.getOutputFormat(), AllowedSettingValues.DEFAULT_OUTPUT_FORMAT_KEY);
+        assertEquals(view.getLocale(), AllowedSettingValues.DEFAULT_LOCALE_KEY);
+        assertEquals(view.getTimeZone(), AllowedSettingValues.DEFAULT_TIME_ZONE_KEY);
     }
 
     @Test

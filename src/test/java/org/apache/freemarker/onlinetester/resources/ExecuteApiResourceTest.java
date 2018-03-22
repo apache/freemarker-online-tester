@@ -19,16 +19,19 @@
 
 package org.apache.freemarker.onlinetester.resources;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.containsString;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
 
 import org.apache.freemarker.onlinetester.model.ExecuteRequest;
-import org.apache.freemarker.onlinetester.model.ExecuteResourceField;
-import org.apache.freemarker.onlinetester.model.ExecuteResourceProblem;
 import org.apache.freemarker.onlinetester.model.ExecuteResponse;
+import org.apache.freemarker.onlinetester.model.ExecuteResponseProblem;
 import org.junit.Test;
 
 public class ExecuteApiResourceTest extends ResourceTest {
@@ -53,7 +56,7 @@ public class ExecuteApiResourceTest extends ResourceTest {
         assertEquals(200, resp.getStatus());
         ExecuteResponse response = resp.readEntity(ExecuteResponse.class);
         assertNotNull(response.getProblems());
-        assertTrue(containsProblem(response, ExecuteResourceField.DATA_MODEL));
+        assertTrue(containsProblem(response, ExecuteRequest.Field.DATA_MODEL));
     }
 
     @Test
@@ -63,8 +66,8 @@ public class ExecuteApiResourceTest extends ResourceTest {
         assertEquals(200, resp.getStatus());
         ExecuteResponse response = resp.readEntity(ExecuteResponse.class);
         assertNotNull(response.getProblems());
-        assertTrue(containsProblem(response, ExecuteResourceField.DATA_MODEL));
-        String problemMessage = getProblemMessage(response, ExecuteResourceField.DATA_MODEL);
+        assertTrue(containsProblem(response, ExecuteRequest.Field.DATA_MODEL));
+        String problemMessage = getProblemMessage(response, ExecuteRequest.Field.DATA_MODEL);
         assertThat(problemMessage, containsString("data model"));
         assertThat(problemMessage, containsString("limit"));
     }
@@ -76,8 +79,8 @@ public class ExecuteApiResourceTest extends ResourceTest {
         assertEquals(200, resp.getStatus());
         ExecuteResponse response = resp.readEntity(ExecuteResponse.class);
         assertNotNull(response.getProblems());
-        assertTrue(containsProblem(response, ExecuteResourceField.TEMPLATE));
-        String problemMessage = getProblemMessage(response, ExecuteResourceField.TEMPLATE);
+        assertTrue(containsProblem(response, ExecuteRequest.Field.TEMPLATE));
+        String problemMessage = getProblemMessage(response, ExecuteRequest.Field.TEMPLATE);
         assertThat(problemMessage, containsString("template"));
         assertThat(problemMessage, containsString("limit"));
     }
@@ -88,17 +91,22 @@ public class ExecuteApiResourceTest extends ResourceTest {
         req.setOutputFormat("wrongOutputFormat");
         req.setLocale("wrongLocale");
         req.setTimeZone("wrongTimeZone");
+        req.setTagSyntax("wrongTagSyntax");
+        req.setInterpolationSyntax("wrongInterpolationSyntax");
 
         Response resp = postJSON(req);
         
         assertEquals(200, resp.getStatus());
         ExecuteResponse response = resp.readEntity(ExecuteResponse.class);
         assertNotNull(response.getProblems());
-        assertThat(getProblemMessage(response, ExecuteResourceField.TEMPLATE), containsString("limit"));
-        assertThat(getProblemMessage(response, ExecuteResourceField.DATA_MODEL), containsString("limit"));
-        assertThat(getProblemMessage(response, ExecuteResourceField.OUTPUT_FORMAT), containsString("wrongOutputFormat"));
-        assertThat(getProblemMessage(response, ExecuteResourceField.LOCALE), containsString("wrongLocale"));
-        assertThat(getProblemMessage(response, ExecuteResourceField.TIME_ZONE), containsString("wrongTimeZone"));
+        assertThat(getProblemMessage(response, ExecuteRequest.Field.TEMPLATE), containsString("limit"));
+        assertThat(getProblemMessage(response, ExecuteRequest.Field.DATA_MODEL), containsString("limit"));
+        assertThat(getProblemMessage(response, ExecuteRequest.Field.OUTPUT_FORMAT), containsString("wrongOutputFormat"));
+        assertThat(getProblemMessage(response, ExecuteRequest.Field.LOCALE), containsString("wrongLocale"));
+        assertThat(getProblemMessage(response, ExecuteRequest.Field.TIME_ZONE), containsString("wrongTimeZone"));
+        assertThat(getProblemMessage(response, ExecuteRequest.Field.TAG_SYNTAX), containsString("wrongTagSyntax"));
+        assertThat(getProblemMessage(response, ExecuteRequest.Field.INTERPOLATION_SYNTAX), containsString(
+        		"wrongInterpolationSyntax"));
     }
     
     private String create30KString() {
@@ -109,8 +117,8 @@ public class ExecuteApiResourceTest extends ResourceTest {
         return sb.toString();
     }
 
-    private boolean containsProblem(ExecuteResponse response, ExecuteResourceField field) {
-        for (ExecuteResourceProblem problem : response.getProblems()) {
+    private boolean containsProblem(ExecuteResponse response, ExecuteRequest.Field field) {
+        for (ExecuteResponseProblem problem : response.getProblems()) {
             if (problem.getField() == field) {
                 return true;
             }
@@ -118,8 +126,8 @@ public class ExecuteApiResourceTest extends ResourceTest {
         return false;
     }
 
-    private String getProblemMessage(ExecuteResponse response, ExecuteResourceField field) {
-        for (ExecuteResourceProblem problem : response.getProblems()) {
+    private String getProblemMessage(ExecuteResponse response, ExecuteRequest.Field field) {
+        for (ExecuteResponseProblem problem : response.getProblems()) {
             if (problem.getField() == field) {
                 return problem.getMessage();
             }

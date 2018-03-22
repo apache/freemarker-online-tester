@@ -33,7 +33,7 @@ import io.dropwizard.testing.junit.DropwizardAppRule;
 public class ApplicationStartsTest {
 
     @ClassRule
-    public final static DropwizardAppRule RULE = new DropwizardAppRule<FreeMarkerOnlineTesterConfiguration>
+    public final static DropwizardAppRule<FreeMarkerOnlineTesterConfiguration> RULE = new DropwizardAppRule<>
             (FreeMarkerOnlineTester.class,
             Resources.getResource("freemarker-online.yml").getPath());
 

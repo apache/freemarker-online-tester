@@ -19,26 +19,26 @@
 
 package org.apache.freemarker.onlinetester.model;
 
-public class ExecuteResourceProblem {
+public class ExecuteResponseProblem {
     
-    private ExecuteResourceField field;
+    private ExecuteRequest.Field field;
     private String message;
     
     // Needed for JSON unmarshalling
-    public ExecuteResourceProblem() {
+    public ExecuteResponseProblem() {
         //
     }
     
-    public ExecuteResourceProblem(ExecuteResourceField field, String message) {
+    public ExecuteResponseProblem(ExecuteRequest.Field field, String message) {
         this.field = field;
         this.message = message;
     }
 
-    public ExecuteResourceField getField() {
+    public ExecuteRequest.Field getField() {
         return field;
     }
 
-    public void setField(ExecuteResourceField field) {
+    public void setField(ExecuteRequest.Field field) {
         this.field = field;
     }
 

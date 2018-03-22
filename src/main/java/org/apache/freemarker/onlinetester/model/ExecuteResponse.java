@@ -23,10 +23,10 @@ import java.util.List;
 
 public class ExecuteResponse {
     private String result;
-    private List<ExecuteResourceProblem> problems;
+    private List<ExecuteResponseProblem> problems;
     private boolean truncatedResult;
 
-    public ExecuteResponse(String result, List<ExecuteResourceProblem> problems, boolean truncatedResult) {
+    public ExecuteResponse(String result, List<ExecuteResponseProblem> problems, boolean truncatedResult) {
         this.result = result;
         this.problems = problems;
         this.truncatedResult = truncatedResult;
@@ -36,11 +36,11 @@ public class ExecuteResponse {
 
     }
 
-    public List<ExecuteResourceProblem> getProblems() {
+    public List<ExecuteResponseProblem> getProblems() {
         return problems;
     }
 
-    public void setProblems(List<ExecuteResourceProblem> problems) {
+    public void setProblems(List<ExecuteResponseProblem> problems) {
         this.problems = problems;
     }
 

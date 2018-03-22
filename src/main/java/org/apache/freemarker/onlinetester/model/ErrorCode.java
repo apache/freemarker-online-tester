@@ -21,5 +21,4 @@ package org.apache.freemarker.onlinetester.model;
 
 public enum ErrorCode {
     FREEMARKER_SERVICE_TIMEOUT
-
 }

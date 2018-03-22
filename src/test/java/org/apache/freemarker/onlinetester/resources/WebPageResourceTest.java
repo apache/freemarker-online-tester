@@ -21,23 +21,16 @@ package org.apache.freemarker.onlinetester.resources;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyMap;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
-import java.util.Locale;
-import java.util.TimeZone;
-
+import org.apache.freemarker.onlinetester.services.FreeMarkerService;
+import org.apache.freemarker.onlinetester.services.FreeMarkerService.ExecuteTemplateArgs;
+import org.apache.freemarker.onlinetester.view.FreeMarkerOnlineView;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-
-import org.apache.freemarker.onlinetester.services.FreeMarkerService;
-import org.apache.freemarker.onlinetester.view.FreeMarkerOnlineView;
-
-import freemarker.core.OutputFormat;
 
 @RunWith(MockitoJUnitRunner.class)
 public class WebPageResourceTest {
@@ -50,9 +43,7 @@ public class WebPageResourceTest {
 
     @Test
     public void testInitialForm() {
-        when(freeMarkerService.calculateTemplateOutput(
-                anyString(), anyMap(), any(OutputFormat.class), any(Locale.class), any(TimeZone.class)))
-                .thenThrow(new AssertionError());
+        when(freeMarkerService.executeTemplate(any(ExecuteTemplateArgs.class))).thenThrow(new AssertionError());
         FreeMarkerOnlineView view = webPageResource.blankForm();
         assertEquals(view.getTemplate(), "");
         assertEquals(view.getDataModel(), "");
@@ -60,10 +51,8 @@ public class WebPageResourceTest {
     
     @Test
     public void testPostedBlankForm() {
-        when(freeMarkerService.calculateTemplateOutput(
-                anyString(), anyMap(), any(OutputFormat.class), any(Locale.class), any(TimeZone.class)))
-                .thenThrow(new AssertionError());
-        FreeMarkerOnlineView view = webPageResource.formResult(null, null, null, null, null);
+        when(freeMarkerService.executeTemplate(any(ExecuteTemplateArgs.class))).thenThrow(new AssertionError());
+        FreeMarkerOnlineView view = webPageResource.formResult(null, null, null, null, null, null, null);
         assertEquals(view.getTemplate(), "");
         assertEquals(view.getDataModel(), "");
     }

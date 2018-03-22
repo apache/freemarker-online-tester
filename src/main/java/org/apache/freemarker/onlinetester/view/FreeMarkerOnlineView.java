@@ -25,47 +25,79 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.BiFunction;
 
 import io.dropwizard.views.View;
 import org.apache.commons.lang3.StringUtils;
 
 import org.apache.freemarker.onlinetester.model.SelectionOption;
-import org.apache.freemarker.onlinetester.services.AllowedSettingValuesMaps;
+import org.apache.freemarker.onlinetester.services.AllowedSettingValues;
 
 import freemarker.template.Configuration;
 
 public class FreeMarkerOnlineView extends View {
 
-    private static final List<SelectionOption> LOCALE_SELECTION_OPTIONS = toLocaleSelectionOptions(AllowedSettingValuesMaps.LOCALE_MAP);
-    private static final List<SelectionOption> TIME_ZONE_SELECTION_OPTIONS = toSelectionOptions(AllowedSettingValuesMaps.TIME_ZONE_MAP);
-    private static final List<SelectionOption> OUTPUT_FORMAT_SELECTION_OPTIONS = toSelectionOptions(AllowedSettingValuesMaps.OUTPUT_FORMAT_MAP);
+	private static final List<SelectionOption> LOCALE_SELECTION_OPTIONS = toSelectionOptions(
+			AllowedSettingValues.LOCALE_MAP,
+			(k, v) -> truncate(v.getDisplayName(Locale.US), 18) + "; " + v.toString(),
+			true);
+	private static final List<SelectionOption> TIME_ZONE_SELECTION_OPTIONS = toSelectionOptions(
+			AllowedSettingValues.TIME_ZONE_MAP,
+			(k, v) -> truncate(k, 25),
+			true);
+	private static final List<SelectionOption> OUTPUT_FORMAT_SELECTION_OPTIONS = toSelectionOptions(
+			AllowedSettingValues.OUTPUT_FORMAT_MAP,
+			(k, v) -> k,
+			true);
+	private static final List<SelectionOption> TAG_SYNTAX_SELECTION_OPTIONS = toSelectionOptions(
+			AllowedSettingValues.TAG_SYNTAX_MAP,
+			(k, v) -> {
+				String label = k;
+				if (v == Configuration.ANGLE_BRACKET_TAG_SYNTAX) {
+					label += ", like <#...>, <@...>";
+				} else if (v == Configuration.SQUARE_BRACKET_TAG_SYNTAX) {
+					label += ", like [#...], [@...]";
+				}
+				return label;
+			},
+			false);
+	private static final List<SelectionOption> INTERPOLATION_SYNTAX_SELECTION_OPTIONS = toSelectionOptions(
+			AllowedSettingValues.INTERPOLATION_SYNTAX_MAP, (k, v) -> {
+				String label = k;
+				if (v == Configuration.LEGACY_INTERPOLATION_SYNTAX) {
+					label += ", like ${...}, #{...}";
+				} else if (v == Configuration.DOLLAR_INTERPOLATION_SYNTAX) {
+					label += ", like ${...}";
+				} else if (v == Configuration.SQUARE_BRACKET_INTERPOLATION_SYNTAX) {
+					label += ", like [=...]";
+				}
+				return label;
+			},
+			false);
     
     private String template = "";
     private String dataModel = "";
-    private String outputFormat = AllowedSettingValuesMaps.DEFAULT_OUTPUT_FORMAT_KEY;
-    private String locale = AllowedSettingValuesMaps.DEFAULT_LOCALE_KEY;
-    private String timeZone = AllowedSettingValuesMaps.DEFAULT_TIME_ZONE_KEY;
+    private String outputFormat = AllowedSettingValues.DEFAULT_OUTPUT_FORMAT_KEY;
+    private String locale = AllowedSettingValues.DEFAULT_LOCALE_KEY;
+    private String timeZone = AllowedSettingValues.DEFAULT_TIME_ZONE_KEY;
+    private String tagSyntax = String.valueOf(AllowedSettingValues.DEFAULT_TAG_SYNTAX_KEY);
+    private String interpolationSyntax = String.valueOf(AllowedSettingValues.DEFAULT_INTERPOLATION_SYNTAX_KEY);
     
     private boolean execute;
-    
-    private static List<SelectionOption> toSelectionOptions(Map<String, ?> settingValueMap) {
+
+    private static <V> List<SelectionOption> toSelectionOptions(
+    		Map<String, ? extends V> settingValueMap,
+    		BiFunction<String, ? super V, String> kvpToLabel, boolean sortByLabel) {
         ArrayList<SelectionOption> selectionOptions = new ArrayList<SelectionOption>(settingValueMap.size());
-        for (String key : settingValueMap.keySet()) {
-            selectionOptions.add(new SelectionOption(key, truncate(key, 25)));
+        for (Map.Entry<String, ? extends V> ent : settingValueMap.entrySet()) {
+        	String key = ent.getKey();
+            selectionOptions.add(new SelectionOption(
+            		key,
+            		kvpToLabel.apply(key, ent.getValue())));
         }
-        Collections.sort(selectionOptions);
-        return selectionOptions;
-    }
-    
-    private static List<SelectionOption> toLocaleSelectionOptions(Map<String, Locale> localeMap) {
-        ArrayList<SelectionOption> selectionOptions = new ArrayList<SelectionOption>(localeMap.size());
-        for (Map.Entry<String, Locale> ent : localeMap.entrySet()) {
-            Locale locale = ent.getValue();
-            selectionOptions.add(
-                    new SelectionOption(ent.getKey(),
-                    truncate(locale.getDisplayName(Locale.US), 18) + "; " + locale.toString()));
+        if (sortByLabel) {
+        	Collections.sort(selectionOptions);
         }
-        Collections.sort(selectionOptions);
         return selectionOptions;
     }
     
@@ -118,12 +150,20 @@ public class FreeMarkerOnlineView extends View {
         return TIME_ZONE_SELECTION_OPTIONS;
     }
 
+    public List<SelectionOption> getTagSyntaxes() {
+        return TAG_SYNTAX_SELECTION_OPTIONS;
+    }
+
+    public List<SelectionOption> getInterpolationSyntaxes() {
+        return INTERPOLATION_SYNTAX_SELECTION_OPTIONS;
+    }
+    
     public String getOutputFormat() {
         return outputFormat;
     }
 
     public void setOutputFormat(String outputFormat) {
-        this.outputFormat = withDefault(outputFormat, AllowedSettingValuesMaps.DEFAULT_OUTPUT_FORMAT_KEY);
+        this.outputFormat = withDefault(outputFormat, AllowedSettingValues.DEFAULT_OUTPUT_FORMAT_KEY);
     }
 
     public String getLocale() {
@@ -131,7 +171,7 @@ public class FreeMarkerOnlineView extends View {
     }
 
     public void setLocale(String locale) {
-        this.locale = withDefault(locale, AllowedSettingValuesMaps.DEFAULT_LOCALE_KEY);
+        this.locale = withDefault(locale, AllowedSettingValues.DEFAULT_LOCALE_KEY);
     }
 
     public String getTimeZone() {
@@ -139,10 +179,26 @@ public class FreeMarkerOnlineView extends View {
     }
 
     public void setTimeZone(String timeZone) {
-        this.timeZone = withDefault(timeZone, AllowedSettingValuesMaps.DEFAULT_TIME_ZONE_KEY);
+        this.timeZone = withDefault(timeZone, AllowedSettingValues.DEFAULT_TIME_ZONE_KEY);
     }
     
-    public boolean isExecute() {
+    public String getTagSyntax() {
+		return tagSyntax;
+	}
+
+	public void setTagSyntax(String tagSyntax) {
+		this.tagSyntax = withDefault(tagSyntax, AllowedSettingValues.DEFAULT_TAG_SYNTAX_KEY);
+	}
+
+	public String getInterpolationSyntax() {
+		return interpolationSyntax;
+	}
+
+	public void setInterpolationSyntax(String interpolationSyntax) {
+		this.interpolationSyntax = withDefault(interpolationSyntax, AllowedSettingValues.DEFAULT_INTERPOLATION_SYNTAX_KEY);
+	}
+
+	public boolean isExecute() {
         return execute;
     }
 

@@ -36,7 +36,7 @@ server:
     appenders: []
 viewRendererConfiguration:
   .ftl:
-    incompatibleImprovements: 2.3.27
+    incompatibleImprovements: 2.3.28
     locale: en_US
     timeZone: UTC
     outputEncoding: UTF-8
