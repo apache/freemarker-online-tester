@@ -115,7 +115,7 @@ public class FreeMarkerOnlineView extends View {
      * @param execute set to true if the execution should be triggered on page load.
      */
     public FreeMarkerOnlineView() {
-        super("/view/freemarker-online.ftl", Charset.forName("utf-8"));
+        super("/view/main.ftlh");
     }
 
     public String getTemplate() {

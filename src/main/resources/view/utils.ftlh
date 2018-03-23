@@ -1,5 +1,3 @@
-<#ftl outputFormat='HTML'>
-
 <#--
 
 /*

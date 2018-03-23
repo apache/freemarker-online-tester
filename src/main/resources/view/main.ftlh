@@ -1,5 +1,3 @@
-<#ftl outputFormat="HTML">
-
 <#--
 
 /*
@@ -23,7 +21,7 @@
 
 -->
 
-<#import "utils.ftl" as u>
+<#import "utils.ftlh" as u>
 <!DOCTYPE html>
 <html>
 <head>
