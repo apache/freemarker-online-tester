@@ -28,13 +28,13 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/main.css">
     <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/pure-min.css">
     
     <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/autosize.js/3.0.8/autosize.min.js"></script>
-    <script src="assets/js/script.js?v=4"></script><!-- Always increase v if the script.js is changed! -->
+    <script src="assets/script.js?v=4"></script><!-- Always increase v if the script.js is changed! -->
     <script>
         $(function() {
             // Auto-focus on first form input:
