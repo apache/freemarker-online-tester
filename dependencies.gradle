@@ -18,8 +18,8 @@
  */
 
 ext.dropwizard_version = "1.3.0";
-ext.jackson_version = "2.9.4";
-ext.jeresy_version = "2.25";
+ext.jersey_version = "2.25.1"; // Keep in sync with dropwizard jersey dependency!
+
 ext.libraries = [
         // Dropwizard:
         dropwizard: "io.dropwizard:dropwizard-core:$dropwizard_version",
@@ -27,25 +27,24 @@ ext.libraries = [
         dropwizard_views: "io.dropwizard:dropwizard-views:$dropwizard_version",
         dropwizard_views_freemarker: "io.dropwizard:dropwizard-views-freemarker:$dropwizard_version",
         dropwizard_assets: "io.dropwizard:dropwizard-assets:$dropwizard_version",
-        dropwizard_bundles_redirect: "io.dropwizard-bundles:dropwizard-redirect-bundle:1.0.5",
+        dropwizard_bundles_redirect: "io.dropwizard-bundles:dropwizard-redirect-bundle:1.2.2",
 
         // App. specific:
         freemarker: "org.freemarker:freemarker:2.3.28-incubating-SNAPSHOT",
-        jersey_core: "org.glassfish.jersey.core:jersey-core:$jeresy_version",
-        jackson_databind: "com.fasterxml.jackson.core:jackson-databind:$jackson_version",
+        jersey_core: "org.glassfish.jersey.core:jersey-core:$jersey_version",
 
         // Commons:
         findBugs: "com.google.code.findbugs:annotations:3.0.0",
-        commonLangs: "org.apache.commons:commons-lang3:3.3.2",
-        guava: "com.google.guava:guava:13.0.1",
+        commonLangs: "org.apache.commons:commons-lang3:3.7",
+        guava: "com.google.guava:guava:24.1-jre",
 
         // Test:
         dropwizard_testing: "io.dropwizard:dropwizard-testing:$dropwizard_version",
         dropwizard_client: "io.dropwizard:dropwizard-client:$dropwizard_version",
-        junit: "junit:junit-dep:4.11",
-        mockito: "org.mockito:mockito-core:1.9.0",
+        junit: "junit:junit:4.12",
+        mockito: "org.mockito:mockito-core:2.16.0",
         hamcrest: "org.hamcrest:hamcrest-library:1.3",
-        jersey_grrizle: "org.glassfish.jersey.test-framework.providers:jersey-test-framework-provider-grizzly2:$jeresy_version",
+        jersey_grrizle: "org.glassfish.jersey.test-framework.providers:jersey-test-framework-provider-grizzly2:$jersey_version",
         
         // Build:
         rat: "org.apache.rat:apache-rat-tasks:0.12"

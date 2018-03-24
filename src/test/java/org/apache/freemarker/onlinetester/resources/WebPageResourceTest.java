@@ -20,8 +20,9 @@
 package org.apache.freemarker.onlinetester.resources;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 import org.apache.freemarker.onlinetester.services.FreeMarkerService;
 import org.apache.freemarker.onlinetester.services.FreeMarkerService.ExecuteTemplateArgs;
@@ -30,7 +31,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class WebPageResourceTest {
@@ -43,18 +44,18 @@ public class WebPageResourceTest {
 
     @Test
     public void testInitialForm() {
-        when(freeMarkerService.executeTemplate(any(ExecuteTemplateArgs.class))).thenThrow(new AssertionError());
         FreeMarkerOnlineView view = webPageResource.blankForm();
         assertEquals(view.getTemplate(), "");
         assertEquals(view.getDataModel(), "");
+        verify(freeMarkerService, never()).executeTemplate(any(ExecuteTemplateArgs.class));
     }
     
     @Test
     public void testPostedBlankForm() {
-        when(freeMarkerService.executeTemplate(any(ExecuteTemplateArgs.class))).thenThrow(new AssertionError());
         FreeMarkerOnlineView view = webPageResource.formResult(null, null, null, null, null, null, null);
         assertEquals(view.getTemplate(), "");
         assertEquals(view.getDataModel(), "");
+        verify(freeMarkerService, never()).executeTemplate(any(ExecuteTemplateArgs.class));
     }
     
 }

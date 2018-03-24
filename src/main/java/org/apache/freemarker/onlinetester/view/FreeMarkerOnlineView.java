@@ -19,7 +19,6 @@
 
 package org.apache.freemarker.onlinetester.view;
 
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -27,13 +26,12 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.function.BiFunction;
 
-import io.dropwizard.views.View;
 import org.apache.commons.lang3.StringUtils;
-
 import org.apache.freemarker.onlinetester.model.SelectionOption;
 import org.apache.freemarker.onlinetester.services.AllowedSettingValues;
 
 import freemarker.template.Configuration;
+import io.dropwizard.views.View;
 
 public class FreeMarkerOnlineView extends View {
 

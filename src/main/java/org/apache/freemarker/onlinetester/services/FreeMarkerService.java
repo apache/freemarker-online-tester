@@ -34,7 +34,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.freemarker.onlinetester.util.LengthLimitExceededException;
 import org.apache.freemarker.onlinetester.util.LengthLimitedWriter;
 import org.eclipse.jetty.util.BlockingArrayQueue;
@@ -192,7 +191,7 @@ public class FreeMarkerService {
 	                    	logger.warn("Calling Thread.stop() on unresponsive long template processing, which didn't "
 	                    			+ "respond to Template.interrupt() on time. Service state may will be inconsistent; "
 	                    			+ "JVM restart recommended!\n"
-	                    			+ "Template (quoted): \"" + StringEscapeUtils.escapeJava(args.templateSourceCode) + "\"");
+	                    			+ "Template (quoted): " + StringUtil.jQuote(args.templateSourceCode));
 	                    }
 	                    templateExecutorThread.stop();
 	                }

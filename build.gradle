@@ -64,7 +64,6 @@ dependencies {
     compile libraries.dropwizard_assets
     compile libraries.dropwizard_bundles_redirect
     compile libraries.freemarker
-    compile libraries.jackson_databind
     compile libraries.commonLangs
     compile libraries.findBugs
 
