@@ -68,14 +68,14 @@ public class FreeMarkerOnlineTester extends Application<FreeMarkerOnlineTesterCo
         bootstrap.addBundle(new ConfiguredAssetsBundle(
         		ImmutableMap.of(
         				"/assets/", "/assets/", // css, js, images...
-        				"/letsencrypt-verify", "/letsencrypt-verify" // Map to a file outside the jar in the yml!
+        				"/override-me/", "/.well-known/acme-challenge/" // Map to a file outside the jar in the yml!
         				)));
         bootstrap.addBundle(new RedirectBundle(
                 new UriRedirect(
                         "http://freemarker-online.kenshoo.com([:/].*)$",
                         "http://try.freemarker.org$1"),
                 new UriRedirect(
-                        "http://try.freemarker.apache.org([:/].*)$",
+                        "http://try.freemarker.apache.org((:\\d+)?/(?!\\.well-known/acme-challenge/).*)$",
                         "https://try.freemarker.apache.org$1")
         ));
     }
