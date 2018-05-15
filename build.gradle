@@ -61,7 +61,7 @@ dependencies {
     compile libraries.dropwizard
     compile libraries.dropwizard_views
     compile libraries.dropwizard_views_freemarker
-    compile libraries.dropwizard_assets
+    compile libraries.dropwizard_configurable_assets
     compile libraries.dropwizard_bundles_redirect
     compile libraries.freemarker
     compile libraries.commonLangs

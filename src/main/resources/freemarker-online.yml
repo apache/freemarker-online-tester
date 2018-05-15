@@ -22,7 +22,7 @@ logging:
     - type: console
       threshold: ALL
       target: stdout
-#    # For production:
+#    # FOR PRODUCTION:
 #    - type: file
 #      currentLogFilename: /opt/fmonlinetester/var/log/main.log
 #      threshold: ALL
@@ -34,6 +34,20 @@ logging:
 server:
   requestLog:
     appenders: []
+  applicationConnectors:    
+      - type: http
+        port: 8080
+#      # FOR PRODUCTION:
+#      - type: https
+#        port: 8443
+#        keyStorePath: /etc/letsencrypt/live/example.p12
+#        keyStoreType: PKCS12
+#        keyStorePassword: secret
+#        validateCerts: false
+  adminConnectors:
+      # HTTP POST to /tasks/reload-ssl to reload SSL certificates without stopping.
+      - type: http
+        port: 8081            
 viewRendererConfiguration:
   freemarker:  # was `.ftl:` before Dropwizard 1.3.0
     incompatibleImprovements: 2.3.28
@@ -41,3 +55,8 @@ viewRendererConfiguration:
     timeZone: UTC
     outputEncoding: UTF-8
     templateExceptionHandler: rethrow
+assets:
+  overrides:
+    # Let's Encrypt certbot writes its domain ownership vertification file here. It will visit
+    # it from outside when we ask for a new certificate: 
+    /letsencrypt-verify: /opt/fmonlinetester/var/letsencrypt-verify

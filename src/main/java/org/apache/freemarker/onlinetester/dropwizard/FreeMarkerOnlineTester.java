@@ -26,12 +26,15 @@ import org.apache.freemarker.onlinetester.resources.ExecuteApiResource;
 import org.apache.freemarker.onlinetester.resources.WebPageResource;
 import org.apache.freemarker.onlinetester.services.FreeMarkerService;
 
+import com.google.common.collect.ImmutableMap;
+
 import io.dropwizard.Application;
-import io.dropwizard.assets.AssetsBundle;
+import io.dropwizard.bundles.assets.ConfiguredAssetsBundle;
 import io.dropwizard.bundles.redirect.RedirectBundle;
 import io.dropwizard.bundles.redirect.UriRedirect;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import io.dropwizard.sslreload.SslReloadBundle;
 import io.dropwizard.views.ViewBundle;
 
 public class FreeMarkerOnlineTester extends Application<FreeMarkerOnlineTesterConfiguration> {
@@ -61,11 +64,19 @@ public class FreeMarkerOnlineTester extends Application<FreeMarkerOnlineTesterCo
                 return config.getViewRendererConfiguration();
             }        	
         });
-        bootstrap.addBundle(new AssetsBundle());
+        bootstrap.addBundle(new SslReloadBundle());
+        bootstrap.addBundle(new ConfiguredAssetsBundle(
+        		ImmutableMap.of(
+        				"/assets/", "/assets/", // css, js, images...
+        				"/letsencrypt-verify", "/letsencrypt-verify" // Map to a file outside the jar in the yml!
+        				)));
         bootstrap.addBundle(new RedirectBundle(
                 new UriRedirect(
                         "http://freemarker-online.kenshoo.com([:/].*)$",
-                        "http://try.freemarker.org$1")
+                        "http://try.freemarker.org$1"),
+                new UriRedirect(
+                        "http://try.freemarker.apache.org([:/].*)$",
+                        "https://try.freemarker.apache.org$1")
         ));
     }
 }

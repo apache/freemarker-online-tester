@@ -27,6 +27,7 @@ ext.libraries = [
         dropwizard_views: "io.dropwizard:dropwizard-views:$dropwizard_version",
         dropwizard_views_freemarker: "io.dropwizard:dropwizard-views-freemarker:$dropwizard_version",
         dropwizard_assets: "io.dropwizard:dropwizard-assets:$dropwizard_version",
+        dropwizard_configurable_assets: "io.dropwizard-bundles:dropwizard-configurable-assets-bundle:1.0.5",
         dropwizard_bundles_redirect: "io.dropwizard-bundles:dropwizard-redirect-bundle:1.2.2",
 
         // App. specific:

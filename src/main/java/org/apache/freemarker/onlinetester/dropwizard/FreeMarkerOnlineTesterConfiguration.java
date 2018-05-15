@@ -24,10 +24,13 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.dropwizard.Configuration;
+import io.dropwizard.bundles.assets.AssetsBundleConfiguration;
+import io.dropwizard.bundles.assets.AssetsConfiguration;
 
-public class FreeMarkerOnlineTesterConfiguration extends Configuration {
+public class FreeMarkerOnlineTesterConfiguration extends Configuration implements AssetsBundleConfiguration {
 
     private Map<String, Map<String, String>> viewRendererConfiguration;
+	private AssetsConfiguration assetsConfiguration;
 
 	@JsonProperty("viewRendererConfiguration")
     public Map<String, Map<String, String>> getViewRendererConfiguration() {
@@ -38,5 +41,16 @@ public class FreeMarkerOnlineTesterConfiguration extends Configuration {
     public void setViewRendererConfiguration(Map<String, Map<String, String>> viewRendererConfiguration) {
         this.viewRendererConfiguration = viewRendererConfiguration;
     }
+    
+    @JsonProperty("assets")
+    @Override
+    public AssetsConfiguration getAssetsConfiguration() {
+      return assetsConfiguration;
+    }
+
+    @JsonProperty("assets")
+	public void setAssetsConfiguration(AssetsConfiguration assetsConfiguration) {
+		this.assetsConfiguration = assetsConfiguration;
+	}
     
 }
