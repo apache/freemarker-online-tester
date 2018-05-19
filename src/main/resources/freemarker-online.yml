@@ -47,11 +47,17 @@ server:
       - type: http
         port: 8080
 #      # FOR PRODUCTION:
+#        # Note: port < 1024 needs authbind on Linux
+#        port: 80
+#      # FOR PRODUCTION:
 #      - type: https
-#        port: 8443
-#        keyStorePath: /etc/letsencrypt/live/example.p12
+#        # Note: port < 1024 needs authbind on Linux
+#        port: 443
+#        # Be sure that the user with which the service runs can read this, or
+#        # else it fails with "java.lang.IllegalStateException: no valid keystore":
+#        keyStorePath: /etc/letsencrypt/live/certificate.p12
 #        keyStoreType: PKCS12
-#        keyStorePassword: secret
+#        keyStorePassword: <FIXME>
 #        validateCerts: false
   adminConnectors:
       # HTTP POST to /tasks/reload-ssl to reload SSL certificates without stopping.
