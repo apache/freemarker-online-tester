@@ -72,8 +72,11 @@ public class FreeMarkerOnlineTester extends Application<FreeMarkerOnlineTesterCo
         				)));
         bootstrap.addBundle(new RedirectBundle(
                 new UriRedirect(
-                        "http://freemarker-online.kenshoo.com([:/].*)$",
-                        "http://try.freemarker.org$1"),
+                        "http://freemarker-online.kenshoo.com(?::\\d+)?(/.*)$",
+                        "https://try.freemarker.apache.org$1"),
+                new UriRedirect(
+                        "http://try.freemarker.org(?::\\d+)?(/.*)$",
+                        "https://try.freemarker.apache.org$1"),
                 new UriRedirect(
                         "http://try.freemarker.apache.org((:\\d+)?/(?!\\.well-known/acme-challenge/).*)$",
                         "https://try.freemarker.apache.org$1")

@@ -19,11 +19,11 @@ What is FreeMarker Online Tester
 It's a web page to quickly try template snippets, with some simple data-model. It's especially handy for learning the
 template language.
  
-For a deployed version of this tool you can visit <http://freemarker-online.kenshoo.com/> (or soon
-<http://try.freemarker.org/>)
+For a deployed version of this tool you can visit <https://try.freemarker.apache.org/>.
 
 Development Instructions
 ------------------------
+
 * Clone the repository to a local directory
 * Run `./gradlew build` from the cloned directory (use JDK 8)
 * If you want to run it using IDEA run `./gradlew cleanidea idea`; this will generate the IDEA project for you.
