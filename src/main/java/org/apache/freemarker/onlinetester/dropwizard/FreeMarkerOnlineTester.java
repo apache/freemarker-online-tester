@@ -40,6 +40,11 @@ import io.dropwizard.views.ViewBundle;
 public class FreeMarkerOnlineTester extends Application<FreeMarkerOnlineTesterConfiguration> {
 
     public static void main(String[] args) throws Exception {
+        if (args.length < 2) {
+            System.err.println("At least 2 command line arguments are needed. Typical arguments: " +
+                    "server <path-of-freemarker.online.yml>");
+            System.exit(1);
+        }
         new FreeMarkerOnlineTester().run(args);
     }
 
