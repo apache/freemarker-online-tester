@@ -31,7 +31,7 @@ ext.libraries = [
         dropwizard_bundles_redirect: "io.dropwizard-bundles:dropwizard-redirect-bundle:1.2.2",
 
         // App. specific:
-        freemarker: "org.freemarker:freemarker:2.3.28",
+        freemarker: "org.freemarker:freemarker:2.3.29",
         jersey_core: "org.glassfish.jersey.core:jersey-core:$jersey_version",
 
         // Commons:
