@@ -48,9 +48,11 @@ import freemarker.core.TemplateClassResolver;
 import freemarker.core.TemplateConfiguration;
 import freemarker.template.AttemptExceptionReporter;
 import freemarker.template.Configuration;
+import freemarker.template.SimpleObjectWrapper;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
+import freemarker.template.Version;
 import freemarker.template.utility.StringUtil;
 
 public class FreeMarkerService {
@@ -98,8 +100,10 @@ public class FreeMarkerService {
         threadPoolExecutor.allowCoreThreadTimeOut(true);
         templateExecutor = threadPoolExecutor;
 
-        freeMarkerConfig = new Configuration(Configuration.getVersion());
+        Version latestVersion = Configuration.getVersion();
+        freeMarkerConfig = new Configuration(latestVersion);
         freeMarkerConfig.setNewBuiltinClassResolver(TemplateClassResolver.ALLOWS_NOTHING_RESOLVER);
+        freeMarkerConfig.setObjectWrapper(new SimpleObjectWrapperWithXmlSupport(latestVersion));
         freeMarkerConfig.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
         freeMarkerConfig.setLogTemplateExceptions(false);
         freeMarkerConfig.setAttemptExceptionReporter(new AttemptExceptionReporter() {
