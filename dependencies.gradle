@@ -17,7 +17,7 @@
  * under the License.
  */
 
-ext.dropwizard_version = "1.3.14";
+ext.dropwizard_version = "1.3.29";
 ext.jersey_version = "2.25.1"; // Keep in sync with dropwizard jersey dependency!
 
 ext.libraries = [
@@ -31,7 +31,7 @@ ext.libraries = [
         dropwizard_bundles_redirect: "io.dropwizard-bundles:dropwizard-redirect-bundle:1.2.2",
 
         // App. specific:
-        freemarker: "org.freemarker:freemarker:2.3.31",
+        freemarker: "org.freemarker:freemarker:2.3.32",
         jersey_core: "org.glassfish.jersey.core:jersey-core:$jersey_version",
 
         // Commons:
