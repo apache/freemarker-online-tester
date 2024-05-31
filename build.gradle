@@ -39,6 +39,9 @@ repositories {
     maven {
         url "https://repository.apache.org/content/repositories/snapshots/"
     }
+    maven {
+        url "https://repository.apache.org/content/repositories/staging/"
+    }
 }
 
 buildscript {
