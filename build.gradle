@@ -24,15 +24,15 @@ ext.jarName = "${project.name}-${project.version}"
 
 apply from: "intellij.gradle"
 apply from: "${rootDir}/dependencies.gradle"
-apply plugin: 'maven'
+apply plugin: 'maven-publish'
 apply plugin: 'java'
 apply plugin: 'jacoco'
 apply plugin: 'project-report'
-apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'com.gradleup.shadow'
 apply plugin: "com.github.kt3k.coveralls"
 
-project.sourceCompatibility = "1.8"
-project.targetCompatibility = "1.8"
+project.sourceCompatibility = "17"
+project.targetCompatibility = "17"
 
 repositories {
     mavenCentral()
@@ -46,13 +46,14 @@ repositories {
 
 buildscript {
     repositories {
+        mavenCentral()
         maven {
             url "https://plugins.gradle.org/m2/"
         }
     }
     dependencies {
-        classpath "org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.8.1"
-        classpath "com.github.jengelman.gradle.plugins:shadow:1.2.4"
+        classpath "org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.8.3"
+        classpath "com.gradleup.shadow:shadow-gradle-plugin:8.3.10"
     }
 }
 
@@ -61,20 +62,20 @@ configurations {
 }
 
 dependencies {
-    compile libraries.dropwizard
-    compile libraries.dropwizard_views
-    compile libraries.dropwizard_views_freemarker
-    compile libraries.dropwizard_configurable_assets
-    compile libraries.dropwizard_bundles_redirect
-    compile libraries.freemarker
-    compile libraries.commonLangs
-    compile libraries.findBugs
+    implementation libraries.dropwizard
+    implementation libraries.dropwizard_views
+    implementation libraries.dropwizard_views_freemarker
+    implementation libraries.dropwizard_configurable_assets
+    implementation libraries.dropwizard_bundles_redirect
+    implementation libraries.freemarker
+    implementation libraries.commonLangs
+    implementation libraries.findBugs
 
-    testCompile libraries.dropwizard_testing
-    testCompile libraries.junit
-    testCompile libraries.mockito
-    testCompile libraries.hamcrest
-    testCompile libraries.jersey_grrizle
+    testImplementation libraries.dropwizard_testing
+    testImplementation libraries.junit
+    testImplementation libraries.mockito
+    testImplementation libraries.hamcrest
+    testImplementation libraries.jersey_grrizle
     
     rat libraries.rat
 }
@@ -86,10 +87,6 @@ compileTestJava {
     options.compilerArgs << "-Werror"
 }
 
-task wrapper(type: Wrapper) {
-    gradleVersion = '3.5'
-}
-
 jar {
     manifest {
         attributes 'Main-Class': 'org.apache.freemarker.onlinetester.dropwizard.FreeMarkerOnlineTester'
@@ -99,9 +96,8 @@ jar {
 
 shadowJar {
     dependsOn jar
-    baseName = "${jarName}"
-    classifier = null
-    version = null
+    archiveBaseName = "${jarName}"
+    archiveVersion = ""
     mergeServiceFiles()
 }
 
@@ -113,11 +109,11 @@ test.testLogging {
 
 jacocoTestReport {
     reports {
-        xml.enabled  true
+        xml.required = true
     }
 }
 
-task rat {
+tasks.register('rat') {
     doLast {
         ant.taskdef(
                 name: 'ratReport', classname: 'org.apache.rat.anttasks.Report',

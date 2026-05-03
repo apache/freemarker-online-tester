@@ -43,10 +43,10 @@ ext.libraries = [
         dropwizard_testing: "io.dropwizard:dropwizard-testing:$dropwizard_version",
         dropwizard_client: "io.dropwizard:dropwizard-client:$dropwizard_version",
         junit: "junit:junit:4.12",
-        mockito: "org.mockito:mockito-core:2.16.0",
-        hamcrest: "org.hamcrest:hamcrest-library:1.3",
+        mockito: "org.mockito:mockito-core:5.23.0",
+        hamcrest: "org.hamcrest:hamcrest-library:3.0",
         jersey_grrizle: "org.glassfish.jersey.test-framework.providers:jersey-test-framework-provider-grizzly2:$jersey_version",
         
         // Build:
-        rat: "org.apache.rat:apache-rat-tasks:0.12"
+        rat: "org.apache.rat:apache-rat-tasks:0.18"
 ]

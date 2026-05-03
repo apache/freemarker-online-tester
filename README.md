@@ -13,7 +13,7 @@ Development Instructions
 ------------------------
 
 * Clone the repository to a local directory
-* Run `./gradlew build` from the cloned directory (use JDK 8)
+* Run `./gradlew build` from the cloned directory (use JDK 17 or later)
 * If you want to run it using IDEA run `./gradlew cleanidea idea`; this will generate the IDEA project for you.
 * To run the service:
   - From command line: build `shadowJar` (not `jar`) and then issue
