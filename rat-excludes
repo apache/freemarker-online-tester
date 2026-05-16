@@ -55,5 +55,7 @@ gradle/**
 # --------------------------------------
 
 README.md
+AGENTS.md
+SECURITY.md
 gradlew.bat
 gradlew
