@@ -1,0 +1,30 @@
+[versions]
+
+dropwizard = "2.1.12"
+jersey = "2.41"
+freemarker = "2.3.34"
+
+[libraries]
+
+# Dropwizard:
+dropwizard = { module = "io.dropwizard:dropwizard-core", version.ref = "dropwizard" }
+dropwizard-views-freemarker = { module = "io.dropwizard:dropwizard-views-freemarker", version.ref = "dropwizard" }
+dropwizard-configurable-assets = "io.dropwizard-bundles:dropwizard-configurable-assets-bundle:1.0.5"
+dropwizard-bundles-redirect = "io.dropwizard-bundles:dropwizard-redirect-bundle:1.2.2"
+
+# App. specific:
+freemarker = { module = "org.freemarker:freemarker", version.ref = "freemarker" }
+
+# Test:
+dropwizard-testing = { module = "io.dropwizard:dropwizard-testing", version.ref = "dropwizard" }
+junit = "junit:junit:4.13.2"
+mockito = "org.mockito:mockito-core:5.23.0"
+hamcrest = "org.hamcrest:hamcrest-library:3.0"
+jersey-grrizle = { module = "org.glassfish.jersey.test-framework.providers:jersey-test-framework-provider-grizzly2", version.ref = "jersey" }
+
+# Commons:
+commons-lang3 = "org.apache.commons:commons-lang3:3.20.0"
+
+# Build:
+findbugs = "com.google.code.findbugs:annotations:3.0.0"
+rat = "org.apache.rat:apache-rat-tasks:0.18"
