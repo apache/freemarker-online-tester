@@ -25,6 +25,7 @@ plugins {
     `project-report`
     alias(libs.plugins.shadow)
     alias(libs.plugins.coveralls)
+    alias(libs.plugins.rat)
 }
 
 group = "org.apache.freemarker.onlinetester"
@@ -96,27 +97,15 @@ tasks.named<JavaExec>("run") {
     args("server", "src/main/resources/freemarker-online.yml")
 }
 
-tasks.register("rat") {
-    doLast {
-        ant.withGroovyBuilder {
-            "taskdef"(
-                "name" to "ratReport",
-                "classname" to "org.apache.rat.anttasks.Report",
-                "classpath" to rat.asPath
-            )
+tasks.rat {
+    inputDir.set(layout.projectDirectory)
+    reportDir.set(layout.buildDirectory.dir("reports/rat"))
+    verbose.set(true)
 
-            "ratReport"(
-                "reportFile" to "build/rat-report.txt"
-            ) {
-                "fileset"(
-                    "dir" to "",
-                    "excludesfile" to "rat-excludes"
-                )
-            }
-        }
-
-        project.logger.lifecycle("Rat reports were written into build/rat-report.txt")
-    }
+    // We can't use Rat's own excludeFile.set(...), as the Gradle doesn't see what inputs we don't have:
+    excludes.addAll(
+        file("rat-excludes").readLines()
+            .filter { it.isNotBlank() && !it.startsWith("#") })
 }
 
 tasks.check {

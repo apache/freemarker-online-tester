@@ -33,3 +33,4 @@ rat = "org.apache.rat:apache-rat-tasks:0.18"
 
 shadow = { id = "com.gradleup.shadow", version = "8.3.11" }
 coveralls = { id = "com.github.kt3k.coveralls", version = "2.12.2" }
+rat = { id = "org.nosphere.apache.rat", version = "0.8.1" }
