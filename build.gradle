@@ -29,6 +29,7 @@ apply plugin: 'jacoco'
 apply plugin: 'project-report'
 apply plugin: 'com.gradleup.shadow'
 apply plugin: "com.github.kt3k.coveralls"
+apply plugin: "application"
 
 project.sourceCompatibility = "17"
 project.targetCompatibility = "17"
@@ -62,7 +63,6 @@ configurations {
 
 dependencies {
     implementation libs.dropwizard
-    implementation libs.dropwizard.views
     implementation libs.dropwizard.views.freemarker
     implementation libs.dropwizard.configurable.assets
     implementation libs.dropwizard.bundles.redirect
@@ -110,6 +110,14 @@ jacocoTestReport {
     reports {
         xml.required = true
     }
+}
+
+application {
+    mainClassName = "org.apache.freemarker.onlinetester.dropwizard.FreeMarkerOnlineTester"
+}
+
+run {
+    args += ["server", "src/main/resources/freemarker-online.yml"]
 }
 
 tasks.register('rat') {
