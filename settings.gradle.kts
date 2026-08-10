@@ -17,4 +17,12 @@
  * under the License.
  */
 
-rootProject.name = 'freemarker-online'
+rootProject.name = "freemarker-online"
+
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+        maven { url = uri("https://repository.apache.org/content/repositories/snapshots/") }
+        maven { url = uri("https://repository.apache.org/content/repositories/staging/") }
+    }
+}

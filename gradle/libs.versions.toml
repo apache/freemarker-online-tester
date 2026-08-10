@@ -28,3 +28,8 @@ commons-lang3 = "org.apache.commons:commons-lang3:3.20.0"
 # Build:
 findbugs = "com.google.code.findbugs:annotations:3.0.0"
 rat = "org.apache.rat:apache-rat-tasks:0.18"
+
+[plugins]
+
+shadow = { id = "com.gradleup.shadow", version = "8.3.11" }
+coveralls = { id = "com.github.kt3k.coveralls", version = "2.12.2" }
