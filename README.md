@@ -17,7 +17,7 @@ Development Instructions
 * If you want to run it using IDEA run `./gradlew cleanidea idea`; this will generate the IDEA project for you.
 * To run the service:
   - From command line: build `shadowJar` (not `jar`) and then issue
-    `java -jar build/libs/freemarker-online-<VERSION>.jar server src/main/resources/freemarker-online.yml`
+    `java -jar build/libs/freemarker-online-all.jar server src/main/resources/freemarker-online.yml`
   - From IDE: run class `org.apache.freemarker.onlinetester.dropwizard.FreeMarkerOnlineTester` with arguments
     `server src/main/resources/freemarker-online.yml`
 * Then, to try the service locally, visit <http://localhost:8080/>
