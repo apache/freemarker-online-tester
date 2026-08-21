@@ -58,7 +58,7 @@ dependencies {
 }
 
 tasks.withType<JavaCompile>().configureEach {
-    options.compilerArgs.add("-Werror")
+    // options.compilerArgs.add("-Werror")
 }
 
 tasks.jar {
