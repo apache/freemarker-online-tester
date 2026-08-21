@@ -254,7 +254,29 @@ public class DataModelParserTest {
             assertThat(e.getMessage(), containsString("XML"));
         }
     }
-    
+
+    @Test
+    public void testXMLWithDoctypeRejected() throws DataModelParsingException {
+        // XXE prevention: an external entity must never be resolved (local file disclosure, SSRF), so DOCTYPE-s
+        // are rejected altogether:
+        try {
+            DataModelParser.parse(
+                    "n=<!DOCTYPE r [<!ENTITY x SYSTEM \"file:///etc/passwd\">]><r>&x;</r>", DateUtil.UTC);
+            fail();
+        } catch (DataModelParsingException e) {
+            assertThat(e.getMessage(), containsString("XML"));
+        }
+        // Internal entities (entity-expansion DoS) are rejected with the DOCTYPE too:
+        try {
+            DataModelParser.parse("n=<!DOCTYPE r [<!ENTITY x \"v\">]><r>&x;</r>", DateUtil.UTC);
+            fail();
+        } catch (DataModelParsingException e) {
+            assertThat(e.getMessage(), containsString("XML"));
+        }
+        // But DOCTYPE-less XML still works:
+        assertThat(DataModelParser.parse("n=<r>v</r>", DateUtil.UTC).get("n"), instanceOf(Document.class));
+    }
+
     @Test
     public void testNull() throws DataModelParsingException {
         assertNull(DataModelParser.parse("n=null", DateUtil.UTC).get("n"));

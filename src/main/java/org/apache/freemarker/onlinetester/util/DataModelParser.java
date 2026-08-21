@@ -68,16 +68,20 @@ public final class DataModelParser {
 
     private static final String KEYWORD_NAN = "NaN";
 
-    /** Matches a line starting like "someVariable=". */
+    /**
+     * Matches a line starting like "someVariable=".
+     */
     private static final Pattern ASSIGNMENT_START = Pattern.compile(
             "^\\s*"
-            + "(\\p{L}[\\p{L}\\p{N}\\.:\\-_$@]*)" // name
-            + "[ \t]*=\\s*",
+                    + "(\\p{L}[\\p{L}\\p{N}\\.:\\-_$@]*)" // name
+                    + "[ \t]*=\\s*",
             Pattern.MULTILINE);
 
-    /** Matches a value that starts like a number, or probably meant to be number at least. */
+    /**
+     * Matches a value that starts like a number, or probably meant to be number at least.
+     */
     private static final Pattern NUMBER_LIKE = Pattern.compile("[+-]?[\\.,]?[0-9].*", Pattern.DOTALL);
-    
+
     private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
 
     private DataModelParser() {
@@ -94,12 +98,13 @@ public final class DataModelParser {
         String lastName = null;
         int lastAssignmentStartEnd = 0;
         final Matcher assignmentStart = ASSIGNMENT_START.matcher(src);
-        findAssignments: while (true) {
+        findAssignments:
+        while (true) {
             boolean hasNextAssignment = assignmentStart.find(lastAssignmentStartEnd);
 
             if (lastName != null) {
                 String value = src.substring(
-                        lastAssignmentStartEnd, hasNextAssignment ? assignmentStart.start() : src.length())
+                                lastAssignmentStartEnd, hasNextAssignment ? assignmentStart.start() : src.length())
                         .trim();
                 final Object parsedValue;
                 try {
@@ -126,25 +131,25 @@ public final class DataModelParser {
 
         return dataModel;
     }
-    
+
     private static Object parseValue(String value, TimeZone timeZone) throws DataModelParsingException {
         // Note: Because we fall back to interpret the input as a literal string value when it doesn't look like
         // anything else (like a number, boolean, etc.), it's important to avoid misunderstandings, and throw exception
         // in suspicious situations. The user can always quote the string value if we are "too smart". But he will
         // be confused about the rules of FreeMarker if what he believes to be a non-string is misinterpreted by this
         // parser as a string. Getting sometimes an error and then quoting the string is better than that.
-        
+
         if (value.endsWith(";")) {  // Tolerate this habit of Java and JavaScript programmers
             value = value.substring(value.length() - 1).trim();
         }
-        
+
         if (NUMBER_LIKE.matcher(value).matches()) {
             try {
                 return new BigDecimal(value);
             } catch (NumberFormatException e) {
                 // Maybe it's a ISO 8601 Date/time/datetime
                 CalendarFieldsToDateConverter calToDateConverter = new TrivialCalendarFieldsToDateConverter();
-                
+
                 DateParseException attemptedTemportalPExc = null;
                 String attemptedTemporalType = null;
                 final int dashIdx = value.indexOf('-');
@@ -165,7 +170,7 @@ public final class DataModelParser {
                         attemptedTemporalType = "date";
                         attemptedTemportalPExc = pExc;
                     }
-                } else if (colonIdx > 1) { 
+                } else if (colonIdx > 1) {
                     try {
                         return new Time(
                                 DateUtil.parseISO8601Time(value, timeZone, calToDateConverter).getTime());
@@ -178,8 +183,8 @@ public final class DataModelParser {
                     throw new DataModelParsingException("Malformed number: " + value, e);
                 } else {
                     throw new DataModelParsingException(
-                            "Malformed ISO 8601 " + attemptedTemporalType + " (or malformed number): " + 
-                            attemptedTemportalPExc.getMessage(), e.getCause());
+                            "Malformed ISO 8601 " + attemptedTemporalType + " (or malformed number): " +
+                                    attemptedTemportalPExc.getMessage(), e.getCause());
                 }
             }
         } else if (value.startsWith("\"")) {
@@ -211,7 +216,7 @@ public final class DataModelParser {
             }
         } else if (value.startsWith("<")) {
             try {
-                DocumentBuilder builder = NodeModel.getDocumentBuilderFactory().newDocumentBuilder();
+                DocumentBuilder builder = DomUtils.newSecureDocumentBuilder();
                 ErrorHandler errorHandler = NodeModel.getErrorHandler();
                 if (errorHandler != null) builder.setErrorHandler(errorHandler);
                 final Document doc = builder.parse(new InputSource(new StringReader(value)));
@@ -244,7 +249,7 @@ public final class DataModelParser {
         } else if (value.equalsIgnoreCase(KEYWORD_NEGATIVE_INFINITY)) {
             checkKeywordCase(value, KEYWORD_NEGATIVE_INFINITY);
             return Double.NEGATIVE_INFINITY;
-        } else if (value.length() == 0) {
+        } else if (value.isEmpty()) {
             throw new DataModelParsingException(
                     "Empty value. (If you indeed wanted a 0 length string, quote it, like \"\".)");
         } else {
