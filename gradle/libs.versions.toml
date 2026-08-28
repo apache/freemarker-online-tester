@@ -2,7 +2,7 @@
 
 dropwizard = "2.1.12"
 jersey = "2.41"
-freemarker = "2.3.34"
+freemarker = "2.3.35"
 
 [libraries]
 
